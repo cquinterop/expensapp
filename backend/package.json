@@ -4,21 +4,34 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "tsx watch ./src/index.ts"
+    "dev": "tsx watch ./src/index.ts",
+		"build": "tsc",
+    "lint:check": "eslint .",
+    "lint:fix": "eslint . -- --fix",
+		"format:check": "prettier . \"src/**/*.ts\" --check",
+		"format:fix": "prettier .  \"src/**/*.ts\" --write",
+    "type:check": "tsc --noEmit"
   },
   "dependencies": {
-    "esbuild": "^0.25.1",
     "express": "^4.21.2",
-    "get-tsconfig": "^4.10.0",
-    "pino": "^9.6.0",
-    "resolve-pkg-maps": "^1.0.0"
+    "pino": "^9.6.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.1",
     "@types/node": "^22.13.13",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
+    "@typescript-eslint/parser": "^8.28.0",
     "dotenv": "^16.4.7",
-    "tsx": "^4.19.3"
+    "eslint": "^9.23.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.5",
+    "jiti": "^2.4.2",
+    "pino-pretty": "^13.0.0",
+    "prettier": "^3.5.3",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
   },
   "author": "",
+  "type": "module",
   "license": "ISC"
 }
