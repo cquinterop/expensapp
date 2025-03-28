@@ -4,17 +4,19 @@ import { Link } from "react-router";
 
 const SignInPage = () => {
 	return (
-		<AuthCard form={<SignInForm />}>
-			<p className="text-center w-full">
-				Don't have an account?
-				<Link
-					className="text-blue-500 mx-2 cursor-pointer hover:underline"
-					to="/signup"
-				>
-					Sign Up
-				</Link>
-			</p>
-		</AuthCard>
+		<div className="bg-gray-200 flex items-center justify-center min-h-screen">
+			<AuthCard form={<SignInForm />}>
+				<p className="text-center w-full">
+					Don't have an account?
+					<Link
+						className="text-blue-500 mx-2 cursor-pointer hover:underline"
+						to="/signup"
+					>
+						Sign Up
+					</Link>
+				</p>
+			</AuthCard>
+		</div>
 	);
 };
 
