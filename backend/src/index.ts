@@ -3,48 +3,46 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
-import path from 'path';
 import session from 'express-session';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from '@/infrastructure/swagger/swagger.json';
 
 import logger from '@/infrastructure/logger';
 import { configurePassport } from '@/infrastructure/auth/passport';
-import { fileURLToPath } from 'url';
 import { errorRequestHandler } from './interfaces/middlewares/error.middleware';
 
-const SECRET = process.env.SECRET || 'session_key';
-
-// Load environment variables
-dotenv.config({ path: path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../.env') });
+// Import routes
+import authRoutes from '@/interfaces/routes/auth.routes';
+import userRoutes from '@/interfaces/routes/user.routes';
+import { apiLimiter, authLimiter } from '@/interfaces/middlewares/rate-limit.middleware';
+import { CORS_ORIGIN, JWT_SECRET, NODE_ENV, PORT } from '@/infrastructure/config/env';
 
 // Create Express app
 const app = express();
-const PORT = process.env.PORT || 3000;
-
 // Configure Passport
 const passport = configurePassport();
 
 // Middleware
 app.use(
 	cors({
-		origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+		origin: CORS_ORIGIN,
 		credentials: true,
 	}),
 );
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser(SECRET));
+app.use(cookieParser(JWT_SECRET));
 app.use(morgan('dev'));
 
 // Session configuration for OAuth
 app.use(
 	session({
-		secret: SECRET,
+		secret: JWT_SECRET,
 		resave: false,
 		saveUninitialized: false,
 		cookie: {
-			secure: process.env.NODE_ENV === 'production',
+			secure: NODE_ENV === 'production',
 			maxAge: 24 * 60 * 60 * 1000, // 1 day
 		},
 	}),
@@ -54,9 +52,19 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/', (req, res) => {
-	res.send('Express + TypeScript Server');
-});
+// Apply rate limiting to all API routes
+app.use('/api', apiLimiter);
+
+// API routes
+const apiRouter = express.Router();
+apiRouter.use('/auth/login', authLimiter);
+apiRouter.use('/auth', authRoutes);
+apiRouter.use('/users', userRoutes);
+
+app.use('/api', apiRouter);
+
+// Swagger documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Error handling
 app.use(errorRequestHandler);

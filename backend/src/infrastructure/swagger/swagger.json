@@ -1,0 +1,228 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "FactoExpense API",
+    "description": "API for multi-tenant expense management system",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3000",
+  "basePath": "/api",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/signup": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/users/": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateRegularExpenseDto": {
+        "type": "object",
+        "required": [
+          "description",
+          "amount",
+          "receiptUrl",
+          "expenseType"
+        ],
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "receiptUrl": {
+            "type": "string",
+            "format": "url"
+          },
+          "expenseType": {
+            "type": "string",
+            "enum": [
+              "regular"
+            ]
+          }
+        }
+      },
+      "CreateTravelExpenseDto": {
+        "type": "object",
+        "required": [
+          "description",
+          "amount",
+          "expenseType",
+          "travelSubtype",
+          "startDate",
+          "endDate"
+        ],
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "expenseType": {
+            "type": "string",
+            "enum": [
+              "travel"
+            ]
+          },
+          "travelSubtype": {
+            "type": "string",
+            "enum": [
+              "accommodation",
+              "transportation",
+              "other"
+            ]
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "hotelName": {
+            "type": "string"
+          },
+          "checkInDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "checkOutDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "transportationMode": {
+            "type": "string"
+          },
+          "route": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateMileageExpenseDto": {
+        "type": "object",
+        "required": [
+          "description",
+          "distanceKm",
+          "expenseType"
+        ],
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "distanceKm": {
+            "type": "number",
+            "minimum": 0.1
+          },
+          "ratePerKm": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "expenseType": {
+            "type": "string",
+            "enum": [
+              "mileage"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

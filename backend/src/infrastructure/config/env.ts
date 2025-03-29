@@ -1,0 +1,13 @@
+export const {
+	CORS_ORIGIN = 'http://localhost:5173',
+	PORT = 3001,
+	JWT_SECRET = 'jwt_secret',
+	NODE_ENV = 'development',
+	DB_HOST = 'localhost',
+	DB_PORT = 5432,
+	DB_NAME = 'expense_app_dev',
+	DB_USER = 'postgres',
+	DB_PASSWORD = 'postgres',
+	JWT_EXPIRATION = '1d',
+	LOG_LEVEL = 'info',
+} = process.env;

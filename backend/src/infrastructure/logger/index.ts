@@ -1,8 +1,10 @@
 import { pino, type Logger } from 'pino';
+import { LOG_LEVEL, NODE_ENV } from '../config/env';
 
 const logger: Logger = pino({
-	level: process.env.LOG_LEVEL || 'info',
-	transport: { target: 'pino-pretty', options: { colorize: true } },
+	level: LOG_LEVEL,
+	transport:
+		NODE_ENV === 'development' ? { target: 'pino-pretty', options: { colorize: true } } : undefined,
 });
 
 export default logger;
