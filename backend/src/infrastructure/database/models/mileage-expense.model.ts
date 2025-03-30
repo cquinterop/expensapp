@@ -19,20 +19,20 @@ export class MileageExpenseModel extends Model {
 		allowNull: false,
 		unique: true,
 	})
-	expenseId!: string;
+	declare expenseId: string;
 
 	@Column({
 		type: DataType.DECIMAL(10, 2),
 		allowNull: false,
 	})
-	distanceKm!: number;
+	declare distanceKm: number;
 
 	@Column({
 		type: DataType.DECIMAL(10, 2),
 		allowNull: false,
 	})
-	ratePerKm!: number;
+	declare ratePerKm: number;
 
 	@BelongsTo(() => ExpenseModel)
-	expense!: ExpenseModel;
+	declare expense: ExpenseModel;
 }

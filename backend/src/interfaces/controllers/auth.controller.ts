@@ -15,7 +15,6 @@ export class AuthController {
 	async login(req: Request, res: Response): Promise<void> {
 		try {
 			// Validate request body
-			console.log(req);
 			const loginDto = plainToClass(LoginDto, req.body);
 			const errors = await validate(loginDto);
 			if (errors.length > 0) {
@@ -35,7 +34,7 @@ export class AuthController {
 
 			res.status(200).json(result);
 		} catch (error) {
-			res.status(401).json({ error: error.message });
+			res.status(401).json({ error: (error as Error).message });
 		}
 	}
 
@@ -61,7 +60,7 @@ export class AuthController {
 
 			res.status(201).json(result);
 		} catch (error) {
-			res.status(400).json({ error: error.message });
+			res.status(400).json({ error: (error as Error).message });
 		}
 	}
 
@@ -75,7 +74,7 @@ export class AuthController {
 		try {
 			res.status(200).json(req.user);
 		} catch (error) {
-			res.status(401).json({ error: error.message });
+			res.status(401).json({ error: (error as Error).message });
 		}
 	}
 }

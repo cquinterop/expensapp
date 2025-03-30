@@ -19,26 +19,26 @@ export class AccommodationDetailModel extends Model {
 		allowNull: false,
 		unique: true,
 	})
-	travelExpenseId!: string;
+	declare travelExpenseId: string;
 
 	@Column({
 		type: DataType.STRING,
 		allowNull: false,
 	})
-	hotelName!: string;
+	declare hotelName: string;
 
 	@Column({
 		type: DataType.DATE,
 		allowNull: false,
 	})
-	checkInDate!: Date;
+	declare checkInDate: Date;
 
 	@Column({
 		type: DataType.DATE,
 		allowNull: false,
 	})
-	checkOutDate!: Date;
+	declare checkOutDate: Date;
 
 	@BelongsTo(() => TravelExpenseModel)
-	travelExpense!: TravelExpenseModel;
+	declare travelExpense: TravelExpenseModel;
 }

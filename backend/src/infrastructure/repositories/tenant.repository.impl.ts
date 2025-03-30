@@ -5,6 +5,15 @@ import { TenantModel } from '@/infrastructure/database/models/tenant.model';
 
 @injectable()
 export class TenantRepositoryImpl implements TenantRepository {
+	async findByName(name: string): Promise<Tenant | null> {
+		const tenantModel = await TenantModel.findOne({ where: { name } });
+		if (!tenantModel) {
+			return null;
+		}
+
+		return this.mapModelToEntity(tenantModel);
+	}
+
 	async findById(id: string): Promise<Tenant | null> {
 		const tenantModel = await TenantModel.findByPk(id);
 		if (!tenantModel) {

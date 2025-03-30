@@ -19,13 +19,13 @@ export class TransportationDetailModel extends Model {
 		allowNull: false,
 		unique: true,
 	})
-	travelExpenseId!: string;
+	declare travelExpenseId: string;
 
 	@Column({
 		type: DataType.STRING,
 		allowNull: false,
 	})
-	transportationMode!: string;
+	declare transportationMode: string;
 
 	@Column({
 		type: DataType.STRING,
@@ -34,5 +34,5 @@ export class TransportationDetailModel extends Model {
 	route!: string;
 
 	@BelongsTo(() => TravelExpenseModel)
-	travelExpense!: TravelExpenseModel;
+	declare travelExpense: TravelExpenseModel;
 }

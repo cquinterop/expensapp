@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcryptjs';
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import type { AuthService } from '@/domain/services/auth.service';

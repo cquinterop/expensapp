@@ -19,28 +19,28 @@ export class TenantModel extends Model {
 		type: DataType.STRING,
 		allowNull: false,
 	})
-	name!: string;
+	declare name: string;
 
 	@Column({
 		type: DataType.DECIMAL(10, 2),
 		allowNull: false,
 		defaultValue: 0,
 	})
-	balance!: number;
+	declare balance: number;
 
 	@Column({
 		type: DataType.BOOLEAN,
 		allowNull: false,
 		defaultValue: true,
 	})
-	isActive!: boolean;
+	declare isActive: boolean;
 
 	@HasMany(() => UserModel)
-	users!: UserModel[];
+	declare users: UserModel[];
 
 	@HasMany(() => ExpenseModel)
-	expenses!: ExpenseModel[];
+	declare expenses: ExpenseModel[];
 
 	@HasMany(() => MileageRateModel)
-	mileageRates!: MileageRateModel[];
+	declare mileageRates: MileageRateModel[];
 }

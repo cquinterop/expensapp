@@ -30,74 +30,74 @@ export class ExpenseModel extends Model {
 		type: DataType.UUID,
 		allowNull: false,
 	})
-	tenantId!: string;
+	declare tenantId: string;
 
 	@ForeignKey(() => UserModel)
 	@Column({
 		type: DataType.UUID,
 		allowNull: false,
 	})
-	userId!: string;
+	declare userId: string;
 
 	@Column({
 		type: DataType.DECIMAL(10, 2),
 		allowNull: false,
 	})
-	amount!: number;
+	declare amount: number;
 
 	@Column({
 		type: DataType.STRING,
 		allowNull: false,
 	})
-	description!: string;
+	declare description: string;
 
 	@Column({
 		type: DataType.STRING,
 		allowNull: false,
 	})
-	expenseType!: string;
+	declare expenseType: string;
 
 	@Column({
 		type: DataType.STRING,
 		allowNull: false,
 		defaultValue: 'pending',
 	})
-	status!: string;
+	declare status: string;
 
 	@Column({
 		type: DataType.DATE,
 		allowNull: false,
 	})
-	submittedAt!: Date;
+	declare submittedAt: Date;
 
 	@Column({
 		type: DataType.DATE,
 		allowNull: true,
 	})
-	processedAt!: Date | null;
+	declare processedAt: Date | null;
 
 	@ForeignKey(() => UserModel)
 	@Column({
 		type: DataType.UUID,
 		allowNull: true,
 	})
-	processedBy!: string | null;
+	declare processedBy: string | null;
 
 	@BelongsTo(() => TenantModel)
-	tenant!: TenantModel;
+	declare tenant: TenantModel;
 
 	@BelongsTo(() => UserModel)
-	user!: UserModel;
+	declare user: UserModel;
 
 	@BelongsTo(() => UserModel, 'processedBy')
-	processor!: UserModel;
+	declare processor: UserModel;
 
 	@HasOne(() => RegularExpenseModel)
-	regularExpense!: RegularExpenseModel;
+	declare regularExpense: RegularExpenseModel;
 
 	@HasOne(() => TravelExpenseModel)
-	travelExpense!: TravelExpenseModel;
+	declare travelExpense: TravelExpenseModel;
 
 	@HasOne(() => MileageExpenseModel)
-	mileageExpense!: MileageExpenseModel;
+	declare mileageExpense: MileageExpenseModel;
 }

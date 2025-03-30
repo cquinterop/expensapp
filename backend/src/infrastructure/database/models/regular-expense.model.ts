@@ -19,14 +19,14 @@ export class RegularExpenseModel extends Model {
 		allowNull: false,
 		unique: true,
 	})
-	expenseId!: string;
+	declare expenseId: string;
 
 	@Column({
 		type: DataType.STRING,
 		allowNull: false,
 	})
-	receiptUrl!: string;
+	declare receiptUrl: string;
 
 	@BelongsTo(() => ExpenseModel)
-	expense!: ExpenseModel;
+	declare expense: ExpenseModel;
 }

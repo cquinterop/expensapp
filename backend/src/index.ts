@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from '@/infrastructure/swagger/swagger.json';
+import sequelize from '@/infrastructure/database/config/database';
 
 import logger from '@/infrastructure/logger';
 import { configurePassport } from '@/infrastructure/auth/passport';
@@ -69,6 +70,23 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Error handling
 app.use(errorRequestHandler);
 
+// Database connection and server startup
+const startServer = async () => {
+	try {
+		await sequelize.authenticate();
+		logger.info('Database connection established successfully');
+
+		app.listen(PORT, () => {
+			logger.info(`Server is running on port ${PORT}`);
+		});
+	} catch (error) {
+		logger.error(`Unable to connect to the database: ${error}`);
+		process.exit(1);
+	}
+};
+
+startServer();
+
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err: Error) => {
 	logger.error('UNHANDLED REJECTION! Shutting down...', err);
@@ -79,8 +97,4 @@ process.on('unhandledRejection', (err: Error) => {
 process.on('uncaughtException', (err: Error) => {
 	logger.error('UNCAUGHT EXCEPTION! Shutting down...', err);
 	process.exit(1);
-});
-
-app.listen(PORT, () => {
-	logger.info(`Server is running on port ${PORT}`);
 });

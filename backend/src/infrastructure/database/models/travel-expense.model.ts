@@ -29,32 +29,32 @@ export class TravelExpenseModel extends Model {
 		allowNull: false,
 		unique: true,
 	})
-	expenseId!: string;
+	declare expenseId: string;
 
 	@Column({
 		type: DataType.STRING,
 		allowNull: false,
 	})
-	travelSubtype!: string;
+	declare travelSubtype: string;
 
 	@Column({
 		type: DataType.DATE,
 		allowNull: false,
 	})
-	startDate!: Date;
+	declare startDate: Date;
 
 	@Column({
 		type: DataType.DATE,
 		allowNull: false,
 	})
-	endDate!: Date;
+	declare endDate: Date;
 
 	@BelongsTo(() => ExpenseModel)
-	expense!: ExpenseModel;
+	declare expense: ExpenseModel;
 
 	@HasOne(() => AccommodationDetailModel)
-	accommodationDetail!: AccommodationDetailModel;
+	declare accommodationDetail: AccommodationDetailModel;
 
 	@HasOne(() => TransportationDetailModel)
-	transportationDetail!: TransportationDetailModel;
+	declare transportationDetail: TransportationDetailModel;
 }

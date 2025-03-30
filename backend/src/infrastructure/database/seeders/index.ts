@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcryptjs';
-import sequelize from './config/database';
+import sequelize from '@/infrastructure/database/config/database';
 import { TenantModel } from '@/infrastructure/database/models/tenant.model';
 import { UserModel } from '@/infrastructure/database/models/user.model';
 import { ExpenseModel } from '@/infrastructure/database/models/expense.model';

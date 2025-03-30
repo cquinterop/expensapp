@@ -27,40 +27,40 @@ export class UserModel extends Model {
 		type: DataType.UUID,
 		allowNull: false,
 	})
-	tenantId!: string;
+	declare tenantId: string;
 
 	@Column({
 		type: DataType.STRING,
 		allowNull: false,
 		unique: true,
 	})
-	email!: string;
+	declare email: string;
 
 	@Column({
 		type: DataType.STRING,
 		allowNull: false,
 	})
-	fullName!: string;
+	declare fullName: string;
 
 	@Column({
 		type: DataType.STRING,
 		allowNull: false,
 	})
-	passwordHash!: string;
+	declare passwordHash: string;
 
 	@Column({
 		type: DataType.STRING,
 		allowNull: false,
 		defaultValue: 'employee',
 	})
-	role!: string;
+	declare role: string;
 
 	@BelongsTo(() => TenantModel)
-	tenant!: TenantModel;
+	declare tenant: TenantModel;
 
 	@HasMany(() => ExpenseModel)
-	expenses!: ExpenseModel[];
+	declare expenses: ExpenseModel[];
 
 	@HasMany(() => ExpenseModel, 'processedBy')
-	processedExpenses!: ExpenseModel[];
+	declare processedExpenses: ExpenseModel[];
 }

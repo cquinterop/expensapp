@@ -17,7 +17,7 @@ export class User extends Entity {
 		super(id);
 	}
 
-	isAdmin(): boolean {
+	get isAdmin(): boolean {
 		return this.role === UserRole.ADMIN;
 	}
 }

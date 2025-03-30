@@ -22,7 +22,7 @@ export class UserController {
 				})),
 			);
 		} catch (error) {
-			res.status(400).json({ error: error.message });
+			res.status(400).json({ error: (error as Error).message });
 		}
 	}
 
@@ -45,7 +45,7 @@ export class UserController {
 				tenantId: user.tenantId,
 			});
 		} catch (error) {
-			res.status(404).json({ error: error.message });
+			res.status(404).json({ error: (error as Error).message });
 		}
 	}
 }

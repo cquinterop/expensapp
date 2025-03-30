@@ -7,29 +7,29 @@ import {
 	Min,
 	ValidateIf,
 } from 'class-validator';
-import { TravelSubtype } from '@/domain/entities/TravelExpense';
+import { TravelSubtype } from '@/domain/entities/travel-expense.entity';
 
 export class CreateTravelExpenseDto {
 	@IsNotEmpty()
 	@IsString()
-	description: string;
+	description!: string;
 
 	@IsNotEmpty()
 	@IsNumber()
 	@Min(0.01)
-	amount: number;
+	amount!: number;
 
 	@IsNotEmpty()
 	@IsEnum(TravelSubtype)
-	travelSubtype: TravelSubtype;
+	travelSubtype!: TravelSubtype;
 
 	@IsNotEmpty()
 	@IsDateString()
-	startDate: string;
+	startDate!: string;
 
 	@IsNotEmpty()
 	@IsDateString()
-	endDate: string;
+	endDate!: string;
 
 	@ValidateIf((o) => o.travelSubtype === TravelSubtype.ACCOMMODATION)
 	@IsNotEmpty()

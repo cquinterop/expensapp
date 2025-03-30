@@ -18,20 +18,20 @@ export class MileageRateModel extends Model {
 		type: DataType.UUID,
 		allowNull: false,
 	})
-	tenantId!: string;
+	declare tenantId: string;
 
 	@Column({
 		type: DataType.DECIMAL(10, 2),
 		allowNull: false,
 	})
-	rate!: number;
+	declare rate: number;
 
 	@Column({
 		type: DataType.DATE,
 		allowNull: false,
 	})
-	effectiveDate!: Date;
+	declare effectiveDate: Date;
 
 	@BelongsTo(() => TenantModel)
-	tenant!: TenantModel;
+	declare tenant: TenantModel;
 }
