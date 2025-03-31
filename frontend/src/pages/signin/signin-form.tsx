@@ -1,16 +1,8 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
+import { ROUTES } from "@/constants/routes";
+import { login } from "@/lib/api";
+import AuthForm from "@/components/shared/auth-form";
+import { useCallback } from "react";
 
 const signInSchema = z.object({
 	email: z.string().email({ message: "Invalid email" }),
@@ -19,57 +11,41 @@ const signInSchema = z.object({
 		.min(6, { message: "Password must be at least 6 characters" }),
 });
 
-const inputData = [
+const signInFields = [
 	{
 		label: "Email",
 		name: "email",
-		attributes: { type: "email", placeholder: "john.doe@company.com" },
+		attributes: {
+			type: "email",
+			placeholder: "hank.scorpio@globex.com",
+			autoFocus: true,
+		},
 	},
 	{
 		label: "Password",
 		name: "password",
-		attributes: { type: "password", placeholder: "••••••••••" },
+		attributes: {
+			type: "password",
+			placeholder: "••••••••••",
+			autoComplete: "on",
+		},
 	},
-];
+] as const;
 
 const SignInForm = () => {
-	const form = useForm<z.infer<typeof signInSchema>>({
-		resolver: zodResolver(signInSchema),
-		defaultValues: { email: "", password: "" },
-	});
-
-	const onSubmit = async (data) => {
-		console.log("Form Data:", data);
-		// Send request to Passport.js authentication endpoint
-	};
+	const handleOnSubmit = useCallback(
+		(data: z.input<typeof signInSchema>) => login(data),
+		[]
+	);
 
 	return (
-		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-				{inputData.map(({ name, label, attributes }) => (
-					<FormField
-						key={name}
-						control={form.control}
-						name={name as "email" | "password"}
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>{label}</FormLabel>
-								<FormControl>
-									<Input {...{ ...field, ...attributes }} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-				))}
-				<Button
-					type="submit"
-					className="bg-[#ff355e] hover:bg-[#ff355e]/85 cursor-pointer py-6 rounded-full w-full"
-				>
-					Sign In
-				</Button>
-			</form>
-		</Form>
+		<AuthForm
+			formSchema={signInSchema}
+			formFields={signInFields}
+			redirect={ROUTES.DASHBOARD}
+			handleOnSubmit={handleOnSubmit}
+			cta="Sign In"
+		/>
 	);
 };
 

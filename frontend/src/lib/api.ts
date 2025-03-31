@@ -19,14 +19,12 @@ export const login = (data: {
 };
 
 export const signup = (data: {
-	tenant_name: string;
+	tenantName: string;
+	fullName: string;
 	email: string;
 	password: string;
-	first_name: string;
-	last_name: string;
-	is_first_user: boolean;
 }) => {
-	return api.post("/signup", data);
+	return api.post("/auth/signup", data);
 };
 
 export const logout = () => {
