@@ -7,5 +7,5 @@ export interface AuthService {
 		password: string,
 		fullName: string,
 	): Promise<{ user: User; token: string }>;
-	login(email: string, password: string, tenantId: string): Promise<{ user: User; token: string }>;
+	login(email: string, password: string): Promise<{ user: User; token: string }>;
 }

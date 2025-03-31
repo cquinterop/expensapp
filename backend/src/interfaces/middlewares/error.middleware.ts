@@ -1,16 +1,6 @@
+import { AppError } from '@/domain/errors/app-error';
 import logger from '@/infrastructure/logger';
 import type { ErrorRequestHandler, Request, Response, NextFunction } from 'express';
-
-export class AppError extends Error {
-	readonly statusCode: number;
-	readonly status: string;
-
-	constructor(message: string, statusCode: number) {
-		super(message);
-		this.statusCode = statusCode;
-		this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
-	}
-}
 
 export const errorRequestHandler: ErrorRequestHandler = (
 	err: AppError | Error,
@@ -22,6 +12,7 @@ export const errorRequestHandler: ErrorRequestHandler = (
 		res.status(err.statusCode).json({
 			status: err.status,
 			message: err.message,
+			details: err?.details,
 		});
 
 		return;
@@ -32,6 +23,6 @@ export const errorRequestHandler: ErrorRequestHandler = (
 
 	res.status(500).json({
 		status: 'error',
-		message: 'internal server error',
+		message: 'Internal Server Error',
 	});
 };

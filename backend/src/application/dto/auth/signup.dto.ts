@@ -16,12 +16,7 @@ export class SignupDto {
 	password!: string;
 
 	@IsNotEmpty()
-	@IsString({ message: 'First name must be a string' })
-	@MinLength(1, { message: 'First name is required' })
-	firstName!: string;
-
-	@IsNotEmpty()
-	@IsString({ message: 'Last name must be a string' })
-	@MinLength(1, { message: 'Last name is required' })
-	lastName!: string;
+	@IsString({ message: 'Full name must be a string' })
+	@MinLength(1, { message: 'Full name is required' })
+	fullName!: string;
 }

@@ -11,7 +11,6 @@ import { User, UserRole } from '@/domain/entities/user.entity';
 import { Tenant } from '@/domain/entities/tenant.entity';
 import { TYPES } from '@/infrastructure/config/types';
 import { AuthenticationError, ValidationError } from '@/domain/errors/app-error';
-import { LoginDto } from '@/application/dto/auth/login.dto';
 import { SignupDto } from '@/application/dto/auth/signup.dto';
 import { JWT_EXPIRATION, JWT_SECRET } from '@/infrastructure/config/env';
 
@@ -22,20 +21,9 @@ export class AuthServiceImpl implements AuthService {
 		@inject(TYPES.TenantRepository) private readonly tenantRepository: TenantRepository,
 	) {}
 
-	async login(
-		email: string,
-		password: string,
-		tenantId: string,
-	): Promise<{ token: string; user: User }> {
-		// Validate input using class-validator
-		const loginDto = plainToClass(LoginDto, { email, password, tenantId });
-		const errors = await validate(loginDto);
-		if (errors.length > 0) {
-			throw new ValidationError('Invalid login data', errors);
-		}
-
-		// Find user by email and tenant
-		const user = await this.userRepository.findByEmail(email, tenantId);
+	async login(email: string, password: string): Promise<{ token: string; user: User }> {
+		// Find user by email
+		const user = await this.userRepository.findByEmail(email);
 		if (!user) {
 			throw new AuthenticationError('Invalid email or password');
 		}

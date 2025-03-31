@@ -1,4 +1,4 @@
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import type { AuthService } from '@/domain/services/auth.service';
 import { TYPES } from '@/infrastructure/config/types';
@@ -7,34 +7,34 @@ import { plainToClass } from 'class-transformer';
 import { LoginDto } from '@/application/dto/auth/login.dto';
 import { SignupDto } from '@/application/dto/auth/signup.dto';
 import { NODE_ENV } from '@/infrastructure/config/env';
+import { ValidationError } from '@/domain/errors/app-error';
 
 @injectable()
 export class AuthController {
 	constructor(@inject(TYPES.AuthService) private readonly authService: AuthService) {}
 
-	async login(req: Request, res: Response): Promise<void> {
+	async login(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
 			// Validate request body
 			const loginDto = plainToClass(LoginDto, req.body);
 			const errors = await validate(loginDto);
 			if (errors.length > 0) {
-				res.status(400).json({ errors });
-				return;
+				throw new ValidationError('Invalid login credentials', errors);
 			}
 
-			const { email, password, tenantId } = req.body;
-			const result = await this.authService.login(email, password, tenantId);
+			const { email, password } = req.body;
+			const { token, user } = await this.authService.login(email, password);
 
 			// Set JWT token in cookie
-			res.cookie('token', result.token, {
+			res.cookie('token', token, {
 				httpOnly: true,
 				secure: NODE_ENV === 'production',
 				maxAge: 24 * 60 * 60 * 1000, // 1 day
 			});
 
-			res.status(200).json(result);
+			res.status(200).json(user);
 		} catch (error) {
-			res.status(401).json({ error: (error as Error).message });
+			next(error);
 		}
 	}
 

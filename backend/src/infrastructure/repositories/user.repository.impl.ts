@@ -14,8 +14,8 @@ export class UserRepositoryImpl implements UserRepository {
 		return this.mapModelToEntity(userModel);
 	}
 
-	async findByEmail(email: string, tenantId: string): Promise<User | null> {
-		const userModel = await UserModel.findOne({ where: { email, tenantId } });
+	async findByEmail(email: string): Promise<User | null> {
+		const userModel = await UserModel.findOne({ where: { email } });
 		if (!userModel) {
 			return null;
 		}

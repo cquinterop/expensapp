@@ -3,7 +3,7 @@ import { container } from '@/infrastructure/config/inversify.config';
 import { TYPES } from '@/infrastructure/config/types';
 import type { AuthController } from '@/interfaces/controllers/auth.controller';
 import { authenticate } from '@/interfaces/middlewares/auth.middleware';
-import { authLimiter } from '@/interfaces/middlewares/rate-limit.middleware';
+import { apiLimiter } from '@/interfaces/middlewares/rate-limit.middleware';
 
 const router = Router();
 const authController = container.get<AuthController>(TYPES.AuthController);
@@ -31,15 +31,13 @@ const authController = container.get<AuthController>(TYPES.AuthController);
  *               password:
  *                 type: string
  *                 format: password
- *               tenantId:
- *                 type: string
  *     responses:
  *       200:
  *         description: Login successful
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', authLimiter, (req, res) => authController.login(req, res));
+router.post('/login', apiLimiter, authController.login.bind(authController));
 
 /**
  * @swagger
