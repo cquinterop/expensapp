@@ -55,8 +55,7 @@ router.post('/login', apiLimiter, authController.login.bind(authController));
  *               - tenantName
  *               - email
  *               - password
- *               - firstName
- *               - lastName
+ *               - fullName
  *             properties:
  *               tenantName:
  *                 type: string
@@ -74,7 +73,7 @@ router.post('/login', apiLimiter, authController.login.bind(authController));
  *       400:
  *         description: Invalid input
  */
-router.post('/signup', (req, res) => authController.signup(req, res));
+router.post('/signup', authController.signup.bind(authController));
 
 /**
  * @swagger
@@ -88,7 +87,7 @@ router.post('/signup', (req, res) => authController.signup(req, res));
  *       200:
  *         description: Logout successful
  */
-router.post('/logout', (req, res) => authController.logout(req, res));
+router.post('/logout', authController.logout.bind(authController));
 
 /**
  * @swagger
@@ -104,6 +103,6 @@ router.post('/logout', (req, res) => authController.logout(req, res));
  *       401:
  *         description: Unauthorized
  */
-router.get('/me', authenticate, (req, res) => authController.getCurrentUser(req, res));
+router.get('/me', authenticate, authController.getCurrentUser.bind(authController));
 
 export default router;

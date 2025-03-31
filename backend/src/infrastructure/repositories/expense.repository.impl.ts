@@ -9,7 +9,7 @@ import { UserModel } from '@/infrastructure/database/models/user.model';
 export class ExpenseRepositoryImpl implements ExpenseRepository {
 	async findById(id: string): Promise<Expense | null> {
 		const expenseModel = await ExpenseModel.findByPk(id, {
-			include: [{ model: UserModel, attributes: ['firstName', 'lastName'] }],
+			include: [{ model: UserModel, attributes: ['fullName'] }],
 		});
 		if (!expenseModel) {
 			return null;
@@ -57,7 +57,7 @@ export class ExpenseRepositoryImpl implements ExpenseRepository {
 		// Execute query
 		const { rows, count } = await ExpenseModel.findAndCountAll({
 			where,
-			include: [{ model: UserModel, attributes: ['firstName', 'lastName'] }],
+			include: [{ model: UserModel, attributes: ['fullName'] }],
 			limit,
 			offset,
 			order: [['submittedAt', 'DESC']],

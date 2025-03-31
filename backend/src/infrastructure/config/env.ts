@@ -10,4 +10,5 @@ export const {
 	DB_PASSWORD = 'postgres',
 	JWT_EXPIRATION = '1d',
 	LOG_LEVEL = 'info',
+	SAULT_ROUNDS = 10,
 } = process.env;

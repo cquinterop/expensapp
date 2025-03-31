@@ -6,12 +6,13 @@ import { User, UserRole } from '@/domain/entities/user.entity';
 import { UserRepository } from '@/domain/repositories/user.repository';
 import { TenantRepository } from '@/domain/repositories/tenant.repository';
 import { TYPES } from '@/infrastructure/config/types';
+import { SAULT_ROUNDS } from '@/infrastructure/config/env';
 
 @injectable()
 export class UserServiceImpl implements UserService {
 	constructor(
-		@inject(TYPES.UserRepository) private userRepository: UserRepository,
-		@inject(TYPES.TenantRepository) private tenantRepository: TenantRepository,
+		@inject(TYPES.UserRepository) private readonly userRepository: UserRepository,
+		@inject(TYPES.TenantRepository) private readonly tenantRepository: TenantRepository,
 	) {}
 
 	async createUser(
@@ -27,19 +28,17 @@ export class UserServiceImpl implements UserService {
 			throw new Error('Tenant not found');
 		}
 
-		// Check if user with same email already exists in this tenant
-		const existingUser = await this.userRepository.findByEmail(email, tenantId);
+		const existingUser = await this.userRepository.findByEmail(email);
 		if (existingUser) {
 			throw new Error('User with this email already exists in this tenant');
 		}
 
-		// Hash password
-		const passwordHash = await bcrypt.hash(password, 10);
+		const passwordHash = await bcrypt.hash(password, SAULT_ROUNDS);
 
-		// Create user
-		const user = new User(uuidv4(), tenantId, email, fullName, passwordHash, role);
+		const newUser = new User(uuidv4(), tenantId, email, fullName, passwordHash, role);
+		const user = await this.userRepository.create(newUser);
 
-		return this.userRepository.create(user);
+		return user;
 	}
 
 	async getUserById(id: string): Promise<User> {
@@ -51,12 +50,13 @@ export class UserServiceImpl implements UserService {
 	}
 
 	async getUsersByTenantId(tenantId: string): Promise<User[]> {
-		// Check if tenant exists
 		const tenant = await this.tenantRepository.findById(tenantId);
 		if (!tenant) {
 			throw new Error('Tenant not found');
 		}
 
-		return this.userRepository.findByTenantId(tenantId);
+		const user = this.userRepository.findByTenantId(tenantId);
+
+		return user;
 	}
 }
