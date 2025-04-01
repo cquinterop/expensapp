@@ -163,7 +163,9 @@ export class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	async getExpenses(filters: ExpenseFilters): Promise<{ expenses: Expense[]; total: number }> {
-		return this.expenseRepository.findByFilters(filters);
+		const expenses = await this.expenseRepository.findByFilters(filters);
+
+		return expenses;
 	}
 
 	async updateExpense(id: string, data: Partial<Expense>): Promise<Expense> {

@@ -57,7 +57,7 @@ export class ExpenseRepositoryImpl implements ExpenseRepository {
 		// Execute query
 		const { rows, count } = await ExpenseModel.findAndCountAll({
 			where,
-			include: [{ model: UserModel, attributes: ['fullName'] }],
+			include: [{ model: UserModel, as: 'user', attributes: ['fullName'] }],
 			limit,
 			offset,
 			order: [['submittedAt', 'DESC']],
@@ -116,7 +116,7 @@ export class ExpenseRepositoryImpl implements ExpenseRepository {
 		return true;
 	}
 
-	private mapModelToEntity(model: ExpenseModel): Expense {
+	private mapModelToEntity(model: ExpenseModel) {
 		const expense = new Expense(
 			model.id,
 			model.tenantId,
@@ -132,6 +132,7 @@ export class ExpenseRepositoryImpl implements ExpenseRepository {
 		expense.processedBy = model.processedBy || undefined;
 		expense.createdAt = model.createdAt;
 		expense.updatedAt = model.updatedAt;
+		expense.user = { fullName: model.user.fullName };
 
 		return expense;
 	}

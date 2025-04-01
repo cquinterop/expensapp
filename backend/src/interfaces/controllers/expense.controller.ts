@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { ExpenseService } from '@/domain/services/expense.service';
 import { TYPES } from '@/infrastructure/config/types';
@@ -9,6 +9,7 @@ import { ExpenseFilterDto } from '@/application/dto/expense/expense-filter.dto';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { ExpenseStatus, ExpenseType } from '@/domain/entities/expense.entity';
+import { ValidationError } from '@/domain/errors/app-error';
 
 @injectable()
 export class ExpenseController {
@@ -96,14 +97,13 @@ export class ExpenseController {
 		}
 	}
 
-	async getExpenses(req: Request, res: Response): Promise<void> {
+	async getExpenses(req: Request, res: Response, next: NextFunction) {
 		try {
 			// Validate query parameters
 			const filterDto = plainToClass(ExpenseFilterDto, req.query);
 			const errors = await validate(filterDto);
-			if (errors.length > 0) {
-				res.status(400).json({ errors });
-				return;
+			if (errors.length) {
+				throw new ValidationError('Invalid expense filter data', errors);
 			}
 
 			// Set tenant ID from authenticated user
@@ -127,7 +127,7 @@ export class ExpenseController {
 				totalPages: Math.ceil(result.total / (filterDto.limit || 10)),
 			});
 		} catch (error) {
-			res.status(400).json({ error: (error as Error).message });
+			next(error);
 		}
 	}
 

@@ -86,10 +86,10 @@ export class ExpenseModel extends Model {
 	@BelongsTo(() => TenantModel)
 	declare tenant: TenantModel;
 
-	@BelongsTo(() => UserModel)
+	@BelongsTo(() => UserModel, { foreignKey: 'userId', as: 'user' })
 	declare user: UserModel;
 
-	@BelongsTo(() => UserModel, 'processedBy')
+	@BelongsTo(() => UserModel)
 	declare processor: UserModel;
 
 	@HasOne(() => RegularExpenseModel)

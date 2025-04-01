@@ -8,6 +8,7 @@ import { LoginDto } from '@/application/dto/auth/login.dto';
 import { SignupDto } from '@/application/dto/auth/signup.dto';
 import { NODE_ENV } from '@/infrastructure/config/env';
 import { ValidationError } from '@/domain/errors/app-error';
+import { User } from '@/domain/entities/user.entity';
 
 @injectable()
 export class AuthController {
@@ -30,7 +31,12 @@ export class AuthController {
 				maxAge: 24 * 60 * 60 * 1000, // 1 day
 			});
 
-			res.status(200).json(user);
+			res.status(200).json({
+				fullName: user.fullName,
+				email: user.email,
+				role: user.role,
+				tenantId: user.tenantId,
+			});
 		} catch (error) {
 			next(error);
 		}
@@ -60,14 +66,19 @@ export class AuthController {
 	}
 
 	async logout(req: Request, res: Response) {
-		// Clear JWT token cookie
 		res.clearCookie('token');
 		res.status(200).json({ message: 'Logged out successfully' });
 	}
 
 	async getCurrentUser(req: Request, res: Response, next: NextFunction) {
+		const user: Partial<User> = req.user!;
 		try {
-			res.status(200).json(req.user);
+			res.status(200).json({
+				fullName: user.fullName,
+				email: user.email,
+				role: user.role,
+				tenantId: user.tenantId,
+			});
 		} catch (error) {
 			next(error);
 		}

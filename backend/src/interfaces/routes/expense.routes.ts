@@ -77,7 +77,7 @@ router.post('/', authenticate, (req, res) => expenseController.createExpense(req
  *       401:
  *         description: Unauthorized
  */
-router.get('/', authenticate, (req, res) => expenseController.getExpenses(req, res));
+router.get('/', authenticate, expenseController.getExpenses.bind(expenseController));
 
 /**
  * @swagger
@@ -101,7 +101,7 @@ router.get('/', authenticate, (req, res) => expenseController.getExpenses(req, r
  *       404:
  *         description: Expense not found
  */
-router.get('/:id', authenticate, (req, res) => expenseController.getExpenseById(req, res));
+router.get('/:id', authenticate, expenseController.getExpenseById.bind(expenseController));
 
 /**
  * @swagger
@@ -133,7 +133,7 @@ router.get('/:id', authenticate, (req, res) => expenseController.getExpenseById(
  *       404:
  *         description: Expense not found
  */
-router.put('/:id', authenticate, (req, res) => expenseController.updateExpense(req, res));
+router.put('/:id', authenticate, expenseController.updateExpense.bind(expenseController));
 
 /**
  * @swagger
@@ -159,7 +159,7 @@ router.put('/:id', authenticate, (req, res) => expenseController.updateExpense(r
  *       404:
  *         description: Expense not found
  */
-router.delete('/:id', authenticate, (req, res) => expenseController.deleteExpense(req, res));
+router.delete('/:id', authenticate, expenseController.deleteExpense.bind(expenseController));
 
 /**
  * @swagger
@@ -187,8 +187,11 @@ router.delete('/:id', authenticate, (req, res) => expenseController.deleteExpens
  *       404:
  *         description: Expense not found
  */
-router.post('/:id/approve', authenticate, authorizeAdmin, (req, res) =>
-	expenseController.approveExpense(req, res),
+router.post(
+	'/:id/approve',
+	authenticate,
+	authorizeAdmin,
+	expenseController.approveExpense.bind(expenseController),
 );
 
 /**
@@ -217,8 +220,11 @@ router.post('/:id/approve', authenticate, authorizeAdmin, (req, res) =>
  *       404:
  *         description: Expense not found
  */
-router.post('/:id/reject', authenticate, authorizeAdmin, (req, res) =>
-	expenseController.rejectExpense(req, res),
+router.post(
+	'/:id/reject',
+	authenticate,
+	authorizeAdmin,
+	expenseController.rejectExpense.bind(expenseController),
 );
 
 export default router;

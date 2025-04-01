@@ -2,7 +2,7 @@ import swaggerAutogen from 'swagger-autogen';
 
 const doc = {
 	info: {
-		title: 'FactoExpense API',
+		title: 'expensapp API',
 		description: 'API for multi-tenant expense management system',
 		version: '1.0.0',
 	},

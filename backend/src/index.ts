@@ -15,6 +15,7 @@ import { errorRequestHandler } from './interfaces/middlewares/error.middleware';
 // Import routes
 import authRoutes from '@/interfaces/routes/auth.routes';
 import userRoutes from '@/interfaces/routes/user.routes';
+import expenseRoutes from '@/interfaces/routes/expense.routes';
 import { apiLimiter } from '@/interfaces/middlewares/rate-limit.middleware';
 import { CORS_ORIGIN, JWT_SECRET, NODE_ENV, PORT } from '@/infrastructure/config/env';
 
@@ -60,6 +61,7 @@ app.use('/api', apiLimiter);
 const apiRouter = express.Router();
 apiRouter.use('/auth', authRoutes);
 apiRouter.use('/users', userRoutes);
+apiRouter.use('/expenses', expenseRoutes);
 
 app.use('/api', apiRouter);
 
