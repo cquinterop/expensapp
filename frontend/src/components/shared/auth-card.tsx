@@ -6,8 +6,13 @@ import {
 	CardFooter,
 	CardHeader,
 } from "@/components/ui/card";
+import { PropsWithChildren, ReactNode } from "react";
 
-export default function AuthCard({ form, children }) {
+export interface AuthCardProps extends PropsWithChildren {
+	form: ReactNode;
+}
+
+export default function AuthCard({ form, children }: Readonly<AuthCardProps>) {
 	return (
 		<Card className="w-full container mx-auto max-w-md">
 			<CardHeader className="text-center">

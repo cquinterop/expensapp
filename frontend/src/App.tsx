@@ -1,9 +1,20 @@
-import { Outlet } from "react-router";
+import { Routes } from "react-router";
+import { renderRoutes } from "@/utils/router";
+import ThemeProvider from "@/providers/theme-provider";
+import routes from "@/router";
+import Header from "@/components/ui/header";
+import { Toaster } from "sonner";
 
-export default function App() {
+const App = () => {
 	return (
-		<div className="bg-red-500 flex items-center justify-center min-h-screen">
-			<Outlet />
-		</div>
+		<ThemeProvider>
+			<Header />
+			<main className="container mx-auto page-height">
+				<Routes>{renderRoutes(routes)}</Routes>
+			</main>
+			<Toaster richColors position="top-center" />
+		</ThemeProvider>
 	);
 };
+
+export default App;

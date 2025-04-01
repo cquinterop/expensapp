@@ -1,11 +1,10 @@
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes } from "react-router";
-import { renderRoutes } from "@/utils/router";
-import routes from "@/router";
+import { BrowserRouter } from "react-router";
 import "./index.css";
+import App from "./App";
 
 createRoot(document.getElementById("root")!).render(
 	<BrowserRouter>
-		<Routes>{renderRoutes(routes)}</Routes>
+		<App />
 	</BrowserRouter>
 );

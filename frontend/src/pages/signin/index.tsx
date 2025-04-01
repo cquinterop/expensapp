@@ -4,7 +4,7 @@ import { Link } from "react-router";
 
 const SignInPage = () => {
 	return (
-		<div className="bg-gray-200 flex items-center justify-center min-h-screen">
+		<div className="flex items-center justify-center min-h-[calc(100vh-56px)]">
 			<AuthCard form={<SignInForm />}>
 				<p className="text-center w-full">
 					Don't have an account?

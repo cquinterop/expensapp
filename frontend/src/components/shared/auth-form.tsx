@@ -17,9 +17,9 @@ import { AxiosError, AxiosResponse } from "axios";
 import { InputHTMLAttributes } from "react";
 
 type FormField<T extends string> = {
-  label: string;
-  name: T;
-  attributes: InputHTMLAttributes<HTMLInputElement>;
+	label: string;
+	name: T;
+	attributes: InputHTMLAttributes<HTMLInputElement>;
 };
 
 export interface AuthFormProps<T extends string> {
@@ -56,6 +56,7 @@ const AuthForm = <T extends string>({
 		try {
 			await handleOnSubmit(data);
 
+			localStorage.setItem("user", "true");
 			navigate(redirect);
 		} catch (error: unknown) {
 			if (!(error instanceof AxiosError)) {
@@ -82,7 +83,11 @@ const AuthForm = <T extends string>({
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+			<form
+				onSubmit={form.handleSubmit(onSubmit)}
+				className="space-y-4"
+				noValidate
+			>
 				{formFields.map(({ name, label, attributes }) => (
 					<FormField
 						key={name}
@@ -92,7 +97,11 @@ const AuthForm = <T extends string>({
 							<FormItem>
 								<FormLabel>{label}</FormLabel>
 								<FormControl>
-									<Input {...field} {...attributes} />
+									<Input
+										{...field}
+										{...attributes}
+										onInput={() => form.clearErrors()}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -103,8 +112,9 @@ const AuthForm = <T extends string>({
 					{form.formState.errors.root?.message}
 				</p>
 				<Button
-					type="submit"
 					className="bg-[#ff355e] hover:bg-[#ff355e]/85 cursor-pointer py-6 rounded-full w-full"
+					disabled={form.formState.isSubmitting}
+					type="submit"
 				>
 					{form.formState.isSubmitting ? (
 						<LoaderCircle className="animate-spin" />

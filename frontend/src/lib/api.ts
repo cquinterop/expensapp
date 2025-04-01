@@ -28,20 +28,21 @@ export const signup = (data: {
 };
 
 export const logout = () => {
-	return api.delete("/logout");
+	return api.post("/auth/logout");
 };
 
 export const getCurrentUser = () => {
-	return api.get("/me");
+	return api.get("/auth/me");
 };
 
 // Expenses API
 export const getExpenses = (params: {
+	tenantId: string;
 	status?: string;
-	start_date?: string;
-	end_date?: string;
+	startDate?: string;
+	endDate?: string;
 	page?: number;
-	per_page?: number;
+	limit?: number;
 }) => {
 	return api.get("/expenses", { params });
 };
