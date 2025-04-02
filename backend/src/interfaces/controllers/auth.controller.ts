@@ -71,13 +71,15 @@ export class AuthController {
 	}
 
 	async getCurrentUser(req: Request, res: Response, next: NextFunction) {
-		const user: Partial<User> = req.user!;
+		const user = req.user as User;
+
 		try {
 			res.status(200).json({
 				fullName: user.fullName,
 				email: user.email,
 				role: user.role,
 				tenantId: user.tenantId,
+				tenantName: user.tenantName,
 			});
 		} catch (error) {
 			next(error);

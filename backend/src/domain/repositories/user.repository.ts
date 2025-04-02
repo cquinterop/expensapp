@@ -5,4 +5,6 @@ export interface UserRepository {
 	findByEmail(email: string): Promise<User | null>;
 	findByTenantId(tenantId: string): Promise<User[]>;
 	create(user: User): Promise<User>;
+	update(user: User): Promise<User>;
+	delete(id: string): Promise<boolean>;
 }

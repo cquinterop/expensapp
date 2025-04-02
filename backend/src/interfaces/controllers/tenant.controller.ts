@@ -1,81 +1,78 @@
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import type { TenantService } from '@/domain/services/tenant.service';
 import { TYPES } from '@/infrastructure/config/types';
+import { AuthorizationError } from '@/domain/errors/app-error';
+import { User } from '@/domain/entities/user.entity';
 
 @injectable()
 export class TenantController {
 	constructor(@inject(TYPES.TenantService) private readonly tenantService: TenantService) {}
 
-	async getAllTenants(req: Request, res: Response): Promise<void> {
+	async getAllTenants(req: Request, res: Response, next: NextFunction) {
 		try {
-			// Only super admins can list all tenants
-			if (!req.user?.isAdmin) {
-				res.status(403).json({ error: 'Super admin access required' });
-				return;
+			const { isAdmin } = req.user as User;
+
+			if (!isAdmin) {
+				throw new AuthorizationError('Access denied');
 			}
 
 			const tenants = await this.tenantService.getAllTenants();
 			res.status(200).json(tenants);
 		} catch (error) {
-			res.status(400).json({ error: (error as Error).message });
+			next(error);
 		}
 	}
 
-	async getTenantById(req: Request, res: Response): Promise<void> {
+	async getTenantById(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { id } = req.params;
+			const { tenantId } = req.user as User;
 
-			// Users can only access their own tenant
-			if (id !== req.user?.tenantId) {
-				res.status(403).json({ error: 'Access denied' });
-				return;
+			if (id !== tenantId) {
+				throw new AuthorizationError('Users can only access their own tenant');
 			}
 
 			const tenant = await this.tenantService.getTenantById(id);
 			res.status(200).json(tenant);
 		} catch (error) {
-			res.status(404).json({ error: (error as Error).message });
+			next(error);
 		}
 	}
 
-	async updateTenant(req: Request, res: Response): Promise<void> {
+	async updateTenant(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { id } = req.params;
+			const { isAdmin, tenantId } = req.user as User;
 
-			// Only admins can update tenant details
-			if (!req.user?.isAdmin) {
-				res.status(403).json({ error: 'Admin access required' });
-				return;
+			if (!isAdmin) {
+				throw new AuthorizationError('Admin access required');
 			}
 
-			// Users can only update their own tenant
-			if (id !== req.user?.tenantId) {
-				res.status(403).json({ error: 'Access denied' });
-				return;
+			if (id !== tenantId) {
+				throw new AuthorizationError('Access denied');
 			}
 
 			const tenant = await this.tenantService.updateTenant(id, req.body);
 			res.status(200).json(tenant);
 		} catch (error) {
-			res.status(400).json({ error: (error as Error).message });
+			next(error);
 		}
 	}
 
-	async deleteTenant(req: Request, res: Response): Promise<void> {
+	async deleteTenant(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { id } = req.params;
+			const { isAdmin } = req.user as User;
 
-			// Only super admins can delete tenants
-			if (!req.user?.isAdmin) {
-				res.status(403).json({ error: 'Super admin access required' });
-				return;
+			if (!isAdmin) {
+				throw new AuthorizationError('Admin access required');
 			}
 
 			await this.tenantService.deleteTenant(id);
 			res.status(204).send();
 		} catch (error) {
-			res.status(400).json({ error: (error as Error).message });
+			next(error);
 		}
 	}
 }

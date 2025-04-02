@@ -5,7 +5,7 @@ import { MileageExpenseModel } from '@/infrastructure/database/models/mileage-ex
 
 @injectable()
 export class MileageExpenseRepositoryImpl implements MileageExpenseRepository {
-	async findByExpenseId(expenseId: string): Promise<MileageExpense | null> {
+	async findByExpenseId(expenseId: string) {
 		const mileageExpenseModel = await MileageExpenseModel.findOne({ where: { expenseId } });
 		if (!mileageExpenseModel) {
 			return null;
@@ -14,7 +14,7 @@ export class MileageExpenseRepositoryImpl implements MileageExpenseRepository {
 		return this.mapModelToEntity(mileageExpenseModel);
 	}
 
-	async create(mileageExpense: MileageExpense): Promise<MileageExpense> {
+	async create(mileageExpense: MileageExpense) {
 		const mileageExpenseModel = await MileageExpenseModel.create({
 			id: mileageExpense.id,
 			expenseId: mileageExpense.expenseId,
@@ -27,7 +27,7 @@ export class MileageExpenseRepositoryImpl implements MileageExpenseRepository {
 		return this.mapModelToEntity(mileageExpenseModel);
 	}
 
-	async update(mileageExpense: MileageExpense): Promise<MileageExpense> {
+	async update(mileageExpense: MileageExpense) {
 		const mileageExpenseModel = await MileageExpenseModel.findByPk(mileageExpense.id);
 		if (!mileageExpenseModel) {
 			throw new Error('Mileage expense not found');
@@ -42,17 +42,18 @@ export class MileageExpenseRepositoryImpl implements MileageExpenseRepository {
 		return this.mapModelToEntity(mileageExpenseModel);
 	}
 
-	async delete(id: string): Promise<boolean> {
+	async delete(id: string) {
 		const mileageExpenseModel = await MileageExpenseModel.findByPk(id);
 		if (!mileageExpenseModel) {
 			return false;
 		}
 
 		await mileageExpenseModel.destroy();
+
 		return true;
 	}
 
-	private mapModelToEntity(model: MileageExpenseModel): MileageExpense {
+	private mapModelToEntity(model: MileageExpenseModel) {
 		const mileageExpense = new MileageExpense(
 			model.id,
 			model.expenseId,
@@ -61,6 +62,7 @@ export class MileageExpenseRepositoryImpl implements MileageExpenseRepository {
 		);
 		mileageExpense.createdAt = model.createdAt;
 		mileageExpense.updatedAt = model.updatedAt;
+
 		return mileageExpense;
 	}
 }

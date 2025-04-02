@@ -22,6 +22,7 @@ import { TenantRepository } from '@/domain/repositories/tenant.repository';
 import { UserRepository } from '@/domain/repositories/user.repository';
 import { MileageRateService } from '@/domain/services/mileage-rate.service';
 import { TYPES } from '@/infrastructure/config/types';
+import { AppError } from '@/domain/errors/app-error';
 
 @injectable()
 export class ExpenseServiceImpl implements ExpenseService {
@@ -42,8 +43,7 @@ export class ExpenseServiceImpl implements ExpenseService {
 		@inject(TYPES.MileageRateService) private readonly mileageRateService: MileageRateService,
 	) {}
 
-	async createRegularExpense(data: CreateRegularExpenseDto): Promise<Expense> {
-		// Create base expense
+	async createRegularExpense(data: CreateRegularExpenseDto) {
 		const expense = new Expense(
 			uuidv4(),
 			data.tenantId,
@@ -55,7 +55,6 @@ export class ExpenseServiceImpl implements ExpenseService {
 
 		const createdExpense = await this.expenseRepository.create(expense);
 
-		// Create regular expense details
 		const regularExpense = new RegularExpense(uuidv4(), createdExpense.id, data.receiptUrl);
 
 		await this.regularExpenseRepository.create(regularExpense);
@@ -63,8 +62,7 @@ export class ExpenseServiceImpl implements ExpenseService {
 		return createdExpense;
 	}
 
-	async createTravelExpense(data: CreateTravelExpenseDto): Promise<Expense> {
-		// Create base expense
+	async createTravelExpense(data: CreateTravelExpenseDto) {
 		const expense = new Expense(
 			uuidv4(),
 			data.tenantId,
@@ -76,7 +74,6 @@ export class ExpenseServiceImpl implements ExpenseService {
 
 		const createdExpense = await this.expenseRepository.create(expense);
 
-		// Create travel expense details
 		const travelExpense = new TravelExpense(
 			uuidv4(),
 			createdExpense.id,
@@ -87,7 +84,6 @@ export class ExpenseServiceImpl implements ExpenseService {
 
 		const createdTravelExpense = await this.travelExpenseRepository.create(travelExpense);
 
-		// Create subtype-specific details
 		if (
 			data.travelSubtype === TravelSubtype.ACCOMMODATION &&
 			data.hotelName &&
@@ -121,15 +117,12 @@ export class ExpenseServiceImpl implements ExpenseService {
 		return createdExpense;
 	}
 
-	async createMileageExpense(data: CreateMileageExpenseDto): Promise<Expense> {
-		// Get mileage rate if not provided
+	async createMileageExpense(data: CreateMileageExpenseDto) {
 		const ratePerKm =
 			data.ratePerKm || (await this.mileageRateService.getCurrentMileageRate(data.tenantId));
 
-		// Calculate amount
 		const amount = data.distanceKm * ratePerKm;
 
-		// Create base expense
 		const expense = new Expense(
 			uuidv4(),
 			data.tenantId,
@@ -141,7 +134,6 @@ export class ExpenseServiceImpl implements ExpenseService {
 
 		const createdExpense = await this.expenseRepository.create(expense);
 
-		// Create mileage expense details
 		const mileageExpense = new MileageExpense(
 			uuidv4(),
 			createdExpense.id,
@@ -154,106 +146,94 @@ export class ExpenseServiceImpl implements ExpenseService {
 		return createdExpense;
 	}
 
-	async getExpenseById(id: string): Promise<Expense> {
+	async getExpenseById(id: string) {
 		const expense = await this.expenseRepository.findById(id);
 		if (!expense) {
-			throw new Error('Expense not found');
+			throw new AppError('Expense not found', 404);
 		}
 		return expense;
 	}
 
-	async getExpenses(filters: ExpenseFilters): Promise<{ expenses: Expense[]; total: number }> {
+	async getExpenses(filters: ExpenseFilters) {
 		const expenses = await this.expenseRepository.findByFilters(filters);
 
 		return expenses;
 	}
 
-	async updateExpense(id: string, data: Partial<Expense>): Promise<Expense> {
+	async updateExpense(id: string, data: Partial<Expense>) {
 		const expense = await this.expenseRepository.findById(id);
 		if (!expense) {
-			throw new Error('Expense not found');
+			throw new AppError('Expense not found', 404);
 		}
 
-		// Only allow updates if expense is pending
 		if (expense.status !== ExpenseStatus.PENDING) {
-			throw new Error('Only pending expenses can be updated');
+			throw new AppError('Only pending expenses can be updated', 400);
 		}
 
-		// Update expense
 		Object.assign(expense, data);
 		expense.updatedAt = new Date();
 
 		return this.expenseRepository.update(expense);
 	}
 
-	async deleteExpense(id: string): Promise<boolean> {
+	async deleteExpense(id: string) {
 		const expense = await this.expenseRepository.findById(id);
 		if (!expense) {
-			throw new Error('Expense not found');
+			throw new AppError('Expense not found', 404);
 		}
 
-		// Only allow deletion if expense is pending
 		if (expense.status !== ExpenseStatus.PENDING) {
-			throw new Error('Only pending expenses can be deleted');
+			throw new AppError('Only pending expenses can be deleted', 400);
 		}
 
 		return this.expenseRepository.delete(id);
 	}
 
-	async approveExpense(id: string, adminId: string): Promise<Expense> {
+	async approveExpense(id: string, adminId: string) {
 		const expense = await this.expenseRepository.findById(id);
 		if (!expense) {
-			throw new Error('Expense not found');
+			throw new AppError('Expense not found', 404);
 		}
 
-		// Get admin user
 		const admin = await this.userRepository.findById(adminId);
 		if (!admin) {
-			throw new Error('Admin user not found');
+			throw new AppError('Admin not found', 404);
 		}
 
-		// Check if admin belongs to the same tenant
 		if (admin.tenantId !== expense.tenantId) {
-			throw new Error('Admin cannot approve expenses from different tenant');
+			throw new AppError('Admin cannot approve expenses from different tenant', 400);
 		}
 
-		// Check if user is admin
 		if (!admin.isAdmin) {
-			throw new Error('Only admins can approve expenses');
+			throw new AppError('Only admins can approve expenses', 400);
 		}
 
-		// Approve expense
 		expense.approve(adminId);
 
-		// Update tenant balance
-		// await this.tenantRepository.updateBalanceWithLock(expense.tenantId, -expense.amount);
+		await this.tenantRepository.updateBalanceWithLock(expense.tenantId, -expense.amount);
 
 		return this.expenseRepository.update(expense);
 	}
 
-	async rejectExpense(id: string, adminId: string): Promise<Expense> {
+	async rejectExpense(id: string, adminId: string) {
 		const expense = await this.expenseRepository.findById(id);
 		if (!expense) {
-			throw new Error('Expense not found');
+			throw new AppError('Expense not found', 404);
 		}
 
-		// Get admin user
 		const admin = await this.userRepository.findById(adminId);
 		if (!admin) {
-			throw new Error('Admin user not found');
+			throw new AppError('Admin not found', 404);
 		}
 
-		// Check if admin belongs to the same tenant
 		if (admin.tenantId !== expense.tenantId) {
-			throw new Error('Admin cannot reject expenses from different tenant');
+			throw new AppError('Admin cannot reject expenses from different tenant', 400);
 		}
 
-		// Check if user is admin
 		if (!admin.isAdmin) {
-			throw new Error('Only admins can reject expenses');
+			throw new AppError('Only admins can reject expenses', 400);
 		}
 
-		// Reject expense
 		expense.reject(adminId);
 
 		return this.expenseRepository.update(expense);

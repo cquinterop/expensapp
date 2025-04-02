@@ -7,4 +7,5 @@ export interface TenantRepository {
 	create(tenant: Tenant): Promise<Tenant>;
 	update(tenant: Tenant): Promise<Tenant>;
 	delete(id: string): Promise<boolean>;
+	updateBalanceWithLock(id: string, amount: number): Promise<Tenant>;
 }

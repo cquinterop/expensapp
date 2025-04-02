@@ -55,6 +55,13 @@ export class UserModel extends Model {
 	})
 	declare role: string;
 
+	@Column({
+		type: DataType.BOOLEAN,
+		allowNull: false,
+		defaultValue: true,
+	})
+	declare isActive: boolean;
+
 	@BelongsTo(() => TenantModel)
 	declare tenant: TenantModel;
 

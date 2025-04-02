@@ -39,8 +39,11 @@ const reportController = container.get<ReportController>(TYPES.ReportController)
  *       403:
  *         description: Forbidden - Admin access required
  */
-router.get('/expenses', authenticate, authorizeAdmin, (req, res) =>
-	reportController.generateExpenseReport(req, res),
+router.get(
+	'/expenses',
+	authenticate,
+	authorizeAdmin,
+	reportController.generateExpenseReport.bind(reportController),
 );
 
 export default router;

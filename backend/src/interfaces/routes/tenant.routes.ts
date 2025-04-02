@@ -23,7 +23,7 @@ const tenantController = container.get<TenantController>(TYPES.TenantController)
  *       403:
  *         description: Forbidden - Super admin access required
  */
-router.get('/', authenticate, (req, res) => tenantController.getAllTenants(req, res));
+router.get('/', authenticate, tenantController.getAllTenants.bind(tenantController));
 
 /**
  * @swagger
@@ -49,7 +49,7 @@ router.get('/', authenticate, (req, res) => tenantController.getAllTenants(req, 
  *       404:
  *         description: Tenant not found
  */
-router.get('/:id', authenticate, (req, res) => tenantController.getTenantById(req, res));
+router.get('/:id', authenticate, tenantController.getTenantById.bind(tenantController));
 
 /**
  * @swagger
@@ -88,8 +88,11 @@ router.get('/:id', authenticate, (req, res) => tenantController.getTenantById(re
  *       404:
  *         description: Tenant not found
  */
-router.put('/:id', authenticate, authorizeAdmin, (req, res) =>
-	tenantController.updateTenant(req, res),
+router.put(
+	'/:id',
+	authenticate,
+	authorizeAdmin,
+	tenantController.updateTenant.bind(tenantController),
 );
 
 /**
@@ -116,6 +119,6 @@ router.put('/:id', authenticate, authorizeAdmin, (req, res) =>
  *       404:
  *         description: Tenant not found
  */
-router.delete('/:id', authenticate, (req, res) => tenantController.deleteTenant(req, res));
+router.delete('/:id', authenticate, tenantController.deleteTenant.bind(tenantController));
 
 export default router;

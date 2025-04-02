@@ -1,4 +1,5 @@
 import { Entity } from '@/domain/entities/base.entity';
+import { User } from './user.entity';
 
 export enum ExpenseType {
 	REGULAR = 'regular',
@@ -22,6 +23,7 @@ export class Expense extends Entity {
 	submittedAt: Date;
 	processedAt?: Date;
 	processedBy?: string;
+	submitter?: User['fullName'];
 
 	constructor(
 		id: string,
@@ -32,6 +34,7 @@ export class Expense extends Entity {
 		expenseType: ExpenseType,
 		status: ExpenseStatus = ExpenseStatus.PENDING,
 		submittedAt: Date = new Date(),
+		submitter?: User['fullName'],
 	) {
 		super(id);
 		this.tenantId = tenantId;
@@ -41,6 +44,7 @@ export class Expense extends Entity {
 		this.expenseType = expenseType;
 		this.status = status;
 		this.submittedAt = submittedAt;
+		this.submitter = submitter;
 	}
 
 	approve(adminId: string): void {
@@ -61,15 +65,15 @@ export class Expense extends Entity {
 		this.processedBy = adminId;
 	}
 
-	isPending(): boolean {
+	get isPending(): boolean {
 		return this.status === ExpenseStatus.PENDING;
 	}
 
-	isApproved(): boolean {
+	get isApproved(): boolean {
 		return this.status === ExpenseStatus.APPROVED;
 	}
 
-	isRejected(): boolean {
+	get isRejected(): boolean {
 		return this.status === ExpenseStatus.REJECTED;
 	}
 }

@@ -32,7 +32,7 @@ const expenseController = container.get<ExpenseController>(TYPES.ExpenseControll
  *       401:
  *         description: Unauthorized
  */
-router.post('/', authenticate, (req, res) => expenseController.createExpense(req, res));
+router.post('/', authenticate, expenseController.createExpense.bind(expenseController));
 
 /**
  * @swagger

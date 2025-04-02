@@ -5,7 +5,7 @@ import { RegularExpenseModel } from '@/infrastructure/database/models/regular-ex
 
 @injectable()
 export class RegularExpenseRepositoryImpl implements RegularExpenseRepository {
-	async findByExpenseId(expenseId: string): Promise<RegularExpense | null> {
+	async findByExpenseId(expenseId: string) {
 		const regularExpenseModel = await RegularExpenseModel.findOne({ where: { expenseId } });
 		if (!regularExpenseModel) {
 			return null;
@@ -14,7 +14,7 @@ export class RegularExpenseRepositoryImpl implements RegularExpenseRepository {
 		return this.mapModelToEntity(regularExpenseModel);
 	}
 
-	async create(regularExpense: RegularExpense): Promise<RegularExpense> {
+	async create(regularExpense: RegularExpense) {
 		const regularExpenseModel = await RegularExpenseModel.create({
 			id: regularExpense.id,
 			expenseId: regularExpense.expenseId,
@@ -26,7 +26,7 @@ export class RegularExpenseRepositoryImpl implements RegularExpenseRepository {
 		return this.mapModelToEntity(regularExpenseModel);
 	}
 
-	async update(regularExpense: RegularExpense): Promise<RegularExpense> {
+	async update(regularExpense: RegularExpense) {
 		const regularExpenseModel = await RegularExpenseModel.findByPk(regularExpense.id);
 		if (!regularExpenseModel) {
 			throw new Error('Regular expense not found');
@@ -40,20 +40,22 @@ export class RegularExpenseRepositoryImpl implements RegularExpenseRepository {
 		return this.mapModelToEntity(regularExpenseModel);
 	}
 
-	async delete(id: string): Promise<boolean> {
+	async delete(id: string) {
 		const regularExpenseModel = await RegularExpenseModel.findByPk(id);
 		if (!regularExpenseModel) {
 			return false;
 		}
 
 		await regularExpenseModel.destroy();
+
 		return true;
 	}
 
-	private mapModelToEntity(model: RegularExpenseModel): RegularExpense {
+	private mapModelToEntity(model: RegularExpenseModel) {
 		const regularExpense = new RegularExpense(model.id, model.expenseId, model.receiptUrl);
 		regularExpense.createdAt = model.createdAt;
 		regularExpense.updatedAt = model.updatedAt;
+
 		return regularExpense;
 	}
 }

@@ -5,7 +5,7 @@ import { AccommodationDetailModel } from '@/infrastructure/database/models/accom
 
 @injectable()
 export class AccommodationDetailRepositoryImpl implements AccommodationDetailRepository {
-	async findByTravelExpenseId(travelExpenseId: string): Promise<AccommodationDetail | null> {
+	async findByTravelExpenseId(travelExpenseId: string) {
 		const accommodationDetailModel = await AccommodationDetailModel.findOne({
 			where: { travelExpenseId },
 		});
@@ -16,7 +16,7 @@ export class AccommodationDetailRepositoryImpl implements AccommodationDetailRep
 		return this.mapModelToEntity(accommodationDetailModel);
 	}
 
-	async create(accommodationDetail: AccommodationDetail): Promise<AccommodationDetail> {
+	async create(accommodationDetail: AccommodationDetail) {
 		const accommodationDetailModel = await AccommodationDetailModel.create({
 			id: accommodationDetail.id,
 			travelExpenseId: accommodationDetail.travelExpenseId,
@@ -30,7 +30,7 @@ export class AccommodationDetailRepositoryImpl implements AccommodationDetailRep
 		return this.mapModelToEntity(accommodationDetailModel);
 	}
 
-	async update(accommodationDetail: AccommodationDetail): Promise<AccommodationDetail> {
+	async update(accommodationDetail: AccommodationDetail) {
 		const accommodationDetailModel = await AccommodationDetailModel.findByPk(
 			accommodationDetail.id,
 		);
@@ -48,7 +48,7 @@ export class AccommodationDetailRepositoryImpl implements AccommodationDetailRep
 		return this.mapModelToEntity(accommodationDetailModel);
 	}
 
-	async delete(id: string): Promise<boolean> {
+	async delete(id: string) {
 		const accommodationDetailModel = await AccommodationDetailModel.findByPk(id);
 		if (!accommodationDetailModel) {
 			return false;
@@ -58,7 +58,7 @@ export class AccommodationDetailRepositoryImpl implements AccommodationDetailRep
 		return true;
 	}
 
-	private mapModelToEntity(model: AccommodationDetailModel): AccommodationDetail {
+	private mapModelToEntity(model: AccommodationDetailModel) {
 		const accommodationDetail = new AccommodationDetail(
 			model.id,
 			model.travelExpenseId,

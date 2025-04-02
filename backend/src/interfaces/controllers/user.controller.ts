@@ -1,40 +1,40 @@
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import type { UserService } from '@/domain/services/user.service';
 import { TYPES } from '@/infrastructure/config/types';
+import { User } from '@/domain/entities/user.entity';
+import { AuthorizationError } from '@/domain/errors/app-error';
 
 @injectable()
 export class UserController {
 	constructor(@inject(TYPES.UserService) private readonly userService: UserService) {}
 
-	async getUsersByTenantId(req: Request, res: Response): Promise<void> {
+	async getUsersByTenantId(req: Request, res: Response, next: NextFunction) {
 		try {
-			// Users can only access users from their own tenant
-			const tenantId = req.user?.tenantId;
-
+			const { tenantId } = req.user as User;
 			const users = await this.userService.getUsersByTenantId(tenantId);
-			res.status(200).json(
-				users.map((user) => ({
-					id: user.id,
-					email: user.email,
-					fullName: user.fullName,
-					role: user.role,
-				})),
-			);
+			const usersByTenantId = users.map((user) => ({
+				id: user.id,
+				email: user.email,
+				fullName: user.fullName,
+				role: user.role,
+				isActive: user.isActive,
+			}));
+
+			res.status(200).json(usersByTenantId);
 		} catch (error) {
-			res.status(400).json({ error: (error as Error).message });
+			next(error);
 		}
 	}
 
-	async getUserById(req: Request, res: Response): Promise<void> {
+	async getUserById(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { id } = req.params;
 			const user = await this.userService.getUserById(id);
+			const { tenantId } = req.user as User;
 
-			// Users can only access users from their own tenant
-			if (user.tenantId !== req.user?.tenantId) {
-				res.status(403).json({ error: 'Access denied' });
-				return;
+			if (user.tenantId !== tenantId) {
+				throw new AuthorizationError('Access denied');
 			}
 
 			res.status(200).json({
@@ -42,10 +42,65 @@ export class UserController {
 				email: user.email,
 				fullName: user.fullName,
 				role: user.role,
+				isActive: user.isActive,
 				tenantId: user.tenantId,
 			});
 		} catch (error) {
-			res.status(404).json({ error: (error as Error).message });
+			next(error);
+		}
+	}
+
+	async updateUser(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { id } = req.params;
+			const user = await this.userService.getUserById(id);
+			const { tenantId, isAdmin } = req.user as User;
+
+			if (!isAdmin) {
+				throw new AuthorizationError('Admin access required');
+			}
+
+			if (user.tenantId !== tenantId) {
+				throw new AuthorizationError('Access denied');
+			}
+
+			const updatedUser = await this.userService.updateUser(id, req.body);
+
+			res.status(200).json({
+				id: updatedUser.id,
+				email: updatedUser.email,
+				fullName: updatedUser.fullName,
+				role: updatedUser.role,
+				isActive: user.isActive,
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async deleteUser(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { id } = req.params;
+			const user = await this.userService.getUserById(id);
+			const { tenantId, isAdmin, id: userId } = req.user as User;
+
+			if (!isAdmin) {
+				throw new AuthorizationError('Admin access required');
+			}
+
+			if (user.tenantId !== tenantId) {
+				throw new AuthorizationError('Access denied');
+			}
+
+			if (id === userId) {
+				throw new AuthorizationError('Users cannot delete themselves');
+			}
+
+			await this.userService.deleteUser(id);
+
+			res.status(204).send();
+		} catch (error) {
+			next(error);
 		}
 	}
 }

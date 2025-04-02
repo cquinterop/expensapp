@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import type { AuthService } from '@/domain/services/auth.service';
 import type { UserRepository } from '@/domain/repositories/user.repository';
 import type { TenantRepository } from '@/domain/repositories/tenant.repository';
@@ -29,6 +29,10 @@ export class AuthServiceImpl implements AuthService {
 			throw new AuthenticationError('Invalid email or password');
 		}
 
+		if (!user.isActive) {
+			throw new AuthenticationError('User account is inactive');
+		}
+
 		const token = this.generateToken(user);
 
 		return { token, user };
@@ -48,7 +52,7 @@ export class AuthServiceImpl implements AuthService {
 		const userId = uuidv4();
 		const passwordHash = await bcrypt.hash(password, SAULT_ROUNDS);
 		const role = UserRole.EMPLOYEE;
-		const newUser = new User(userId, tenant.id, email, fullName, passwordHash, role);
+		const newUser = new User(userId, tenant.id, email, fullName, passwordHash, role, true);
 		const user = await this.userRepository.create(newUser);
 
 		const token = this.generateToken(user);
@@ -66,6 +70,6 @@ export class AuthServiceImpl implements AuthService {
 
 		return jwt.sign(payload, JWT_SECRET, {
 			expiresIn: JWT_EXPIRATION,
-		});
+		} as SignOptions);
 	}
 }

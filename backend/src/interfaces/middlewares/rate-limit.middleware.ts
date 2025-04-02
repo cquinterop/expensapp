@@ -17,7 +17,6 @@ const defaultOptions = {
 	},
 };
 
-// Create rate limiter with Redis store if available
 export const createRateLimiter = (options = {}) => {
 	const limiterOptions = {
 		...defaultOptions,

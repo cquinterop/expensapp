@@ -5,7 +5,7 @@ import { TransportationDetailModel } from '@/infrastructure/database/models/tran
 
 @injectable()
 export class TransportationDetailRepositoryImpl implements TransportationDetailRepository {
-	async findByTravelExpenseId(travelExpenseId: string): Promise<TransportationDetail | null> {
+	async findByTravelExpenseId(travelExpenseId: string) {
 		const transportationDetailModel = await TransportationDetailModel.findOne({
 			where: { travelExpenseId },
 		});
@@ -16,7 +16,7 @@ export class TransportationDetailRepositoryImpl implements TransportationDetailR
 		return this.mapModelToEntity(transportationDetailModel);
 	}
 
-	async create(transportationDetail: TransportationDetail): Promise<TransportationDetail> {
+	async create(transportationDetail: TransportationDetail) {
 		const transportationDetailModel = await TransportationDetailModel.create({
 			id: transportationDetail.id,
 			travelExpenseId: transportationDetail.travelExpenseId,
@@ -29,7 +29,7 @@ export class TransportationDetailRepositoryImpl implements TransportationDetailR
 		return this.mapModelToEntity(transportationDetailModel);
 	}
 
-	async update(transportationDetail: TransportationDetail): Promise<TransportationDetail> {
+	async update(transportationDetail: TransportationDetail) {
 		const transportationDetailModel = await TransportationDetailModel.findByPk(
 			transportationDetail.id,
 		);
@@ -46,17 +46,18 @@ export class TransportationDetailRepositoryImpl implements TransportationDetailR
 		return this.mapModelToEntity(transportationDetailModel);
 	}
 
-	async delete(id: string): Promise<boolean> {
+	async delete(id: string) {
 		const transportationDetailModel = await TransportationDetailModel.findByPk(id);
 		if (!transportationDetailModel) {
 			return false;
 		}
 
 		await transportationDetailModel.destroy();
+
 		return true;
 	}
 
-	private mapModelToEntity(model: TransportationDetailModel): TransportationDetail {
+	private mapModelToEntity(model: TransportationDetailModel) {
 		const transportationDetail = new TransportationDetail(
 			model.id,
 			model.travelExpenseId,
@@ -65,6 +66,7 @@ export class TransportationDetailRepositoryImpl implements TransportationDetailR
 		);
 		transportationDetail.createdAt = model.createdAt;
 		transportationDetail.updatedAt = model.updatedAt;
+
 		return transportationDetail;
 	}
 }

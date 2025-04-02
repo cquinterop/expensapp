@@ -13,6 +13,8 @@ export class User extends Entity {
 		public fullName: string,
 		public passwordHash: string,
 		public role: UserRole,
+		public isActive: boolean,
+		public tenantName?: string,
 	) {
 		super(id);
 	}

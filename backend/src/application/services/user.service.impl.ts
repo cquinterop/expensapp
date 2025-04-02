@@ -7,6 +7,7 @@ import { UserRepository } from '@/domain/repositories/user.repository';
 import { TenantRepository } from '@/domain/repositories/tenant.repository';
 import { TYPES } from '@/infrastructure/config/types';
 import { SAULT_ROUNDS } from '@/infrastructure/config/env';
+import { AppError } from '@/domain/errors/app-error';
 
 @injectable()
 export class UserServiceImpl implements UserService {
@@ -22,41 +23,60 @@ export class UserServiceImpl implements UserService {
 		fullName: string,
 		role: UserRole,
 	): Promise<User> {
-		// Check if tenant exists
 		const tenant = await this.tenantRepository.findById(tenantId);
 		if (!tenant) {
-			throw new Error('Tenant not found');
+			throw new AppError('Tenant not found', 404);
 		}
 
 		const existingUser = await this.userRepository.findByEmail(email);
 		if (existingUser) {
-			throw new Error('User with this email already exists in this tenant');
+			throw new AppError('User with this email already exists in this tenant', 409);
 		}
 
 		const passwordHash = await bcrypt.hash(password, SAULT_ROUNDS);
 
-		const newUser = new User(uuidv4(), tenantId, email, fullName, passwordHash, role);
+		const newUser = new User(uuidv4(), tenantId, email, fullName, passwordHash, role, true);
 		const user = await this.userRepository.create(newUser);
 
 		return user;
 	}
 
-	async getUserById(id: string): Promise<User> {
+	async getUserById(id: string) {
 		const user = await this.userRepository.findById(id);
 		if (!user) {
-			throw new Error('User not found');
+			throw new AppError('User not found', 404);
 		}
 		return user;
 	}
 
-	async getUsersByTenantId(tenantId: string): Promise<User[]> {
+	async getUsersByTenantId(tenantId: string) {
 		const tenant = await this.tenantRepository.findById(tenantId);
 		if (!tenant) {
-			throw new Error('Tenant not found');
+			throw new AppError('Tenant not found', 404);
 		}
 
-		const user = this.userRepository.findByTenantId(tenantId);
+		const user = await this.userRepository.findByTenantId(tenantId);
 
 		return user;
+	}
+
+	async updateUser(id: string, data: Partial<User>) {
+		const user = await this.userRepository.findById(id);
+		if (!user) {
+			throw new AppError('User not found', 404);
+		}
+
+		Object.assign(user, data);
+		user.updatedAt = new Date();
+
+		return this.userRepository.update(user);
+	}
+	async deleteUser(id: string) {
+		const user = await this.userRepository.findById(id);
+		if (!user) {
+			throw new AppError('User not found', 404);
+		}
+
+		return this.userRepository.delete(id);
 	}
 }

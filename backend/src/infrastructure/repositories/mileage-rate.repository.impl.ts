@@ -5,7 +5,7 @@ import { MileageRateModel } from '@/infrastructure/database/models/mileage-rate.
 
 @injectable()
 export class MileageRateRepositoryImpl implements MileageRateRepository {
-	async findLatestByTenantId(tenantId: string): Promise<MileageRate | null> {
+	async findLatestByTenantId(tenantId: string) {
 		const mileageRateModel = await MileageRateModel.findOne({
 			where: { tenantId },
 			order: [['effectiveDate', 'DESC']],
@@ -18,7 +18,7 @@ export class MileageRateRepositoryImpl implements MileageRateRepository {
 		return this.mapModelToEntity(mileageRateModel);
 	}
 
-	async create(mileageRate: MileageRate): Promise<MileageRate> {
+	async create(mileageRate: MileageRate) {
 		const mileageRateModel = await MileageRateModel.create({
 			id: mileageRate.id,
 			tenantId: mileageRate.tenantId,
@@ -31,7 +31,7 @@ export class MileageRateRepositoryImpl implements MileageRateRepository {
 		return this.mapModelToEntity(mileageRateModel);
 	}
 
-	private mapModelToEntity(model: MileageRateModel): MileageRate {
+	private mapModelToEntity(model: MileageRateModel) {
 		const mileageRate = new MileageRate(
 			model.id,
 			model.tenantId,
@@ -40,6 +40,7 @@ export class MileageRateRepositoryImpl implements MileageRateRepository {
 		);
 		mileageRate.createdAt = model.createdAt;
 		mileageRate.updatedAt = model.updatedAt;
+
 		return mileageRate;
 	}
 }

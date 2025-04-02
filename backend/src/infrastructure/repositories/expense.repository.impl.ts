@@ -21,22 +21,18 @@ export class ExpenseRepositoryImpl implements ExpenseRepository {
 	async findByFilters(filters: ExpenseFilters): Promise<{ expenses: Expense[]; total: number }> {
 		const where: any = {};
 
-		// Apply tenant filter
 		if (filters.tenantId) {
 			where.tenantId = filters.tenantId;
 		}
 
-		// Apply user filter
 		if (filters.userId) {
 			where.userId = filters.userId;
 		}
 
-		// Apply status filter
 		if (filters.status) {
 			where.status = filters.status;
 		}
 
-		// Apply date range filters
 		if (filters.startDate || filters.endDate) {
 			where.submittedAt = {};
 
@@ -49,12 +45,10 @@ export class ExpenseRepositoryImpl implements ExpenseRepository {
 			}
 		}
 
-		// Calculate pagination
 		const page = filters.page || 1;
 		const limit = filters.limit || 10;
 		const offset = (page - 1) * limit;
 
-		// Execute query
 		const { rows, count } = await ExpenseModel.findAndCountAll({
 			where,
 			include: [{ model: UserModel, as: 'user', attributes: ['fullName'] }],
@@ -69,7 +63,7 @@ export class ExpenseRepositoryImpl implements ExpenseRepository {
 		};
 	}
 
-	async create(expense: Expense): Promise<Expense> {
+	async create(expense: Expense) {
 		const expenseModel = await ExpenseModel.create({
 			id: expense.id,
 			tenantId: expense.tenantId,
@@ -88,7 +82,7 @@ export class ExpenseRepositoryImpl implements ExpenseRepository {
 		return this.mapModelToEntity(expenseModel);
 	}
 
-	async update(expense: Expense): Promise<Expense> {
+	async update(expense: Expense) {
 		const expenseModel = await ExpenseModel.findByPk(expense.id);
 		if (!expenseModel) {
 			throw new Error('Expense not found');
@@ -106,7 +100,7 @@ export class ExpenseRepositoryImpl implements ExpenseRepository {
 		return this.mapModelToEntity(expenseModel);
 	}
 
-	async delete(id: string): Promise<boolean> {
+	async delete(id: string) {
 		const expenseModel = await ExpenseModel.findByPk(id);
 		if (!expenseModel) {
 			return false;
@@ -126,13 +120,13 @@ export class ExpenseRepositoryImpl implements ExpenseRepository {
 			model.expenseType as ExpenseType,
 			model.status as ExpenseStatus,
 			model.submittedAt,
+			model.user.fullName,
 		);
 
 		expense.processedAt = model.processedAt || undefined;
 		expense.processedBy = model.processedBy || undefined;
 		expense.createdAt = model.createdAt;
 		expense.updatedAt = model.updatedAt;
-		expense.user = { fullName: model.user.fullName };
 
 		return expense;
 	}

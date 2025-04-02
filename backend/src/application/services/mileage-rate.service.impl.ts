@@ -5,25 +5,24 @@ import { MileageRate } from '@/domain/entities/mileage-rate.entity';
 import { MileageRateRepository } from '@/domain/repositories/mileage-rate.repository';
 import { TenantRepository } from '@/domain/repositories/tenant.repository';
 import { TYPES } from '@/infrastructure/config/types';
+import { AppError } from '@/domain/errors/app-error';
 
 @injectable()
 export class MileageRateServiceImpl implements MileageRateService {
 	constructor(
-		@inject(TYPES.MileageRateRepository) private mileageRateRepository: MileageRateRepository,
-		@inject(TYPES.TenantRepository) private tenantRepository: TenantRepository,
+		@inject(TYPES.MileageRateRepository)
+		private readonly mileageRateRepository: MileageRateRepository,
+		@inject(TYPES.TenantRepository) private readonly tenantRepository: TenantRepository,
 	) {}
 
-	async getCurrentMileageRate(tenantId: string): Promise<number> {
-		// Check if tenant exists
+	async getCurrentMileageRate(tenantId: string) {
 		const tenant = await this.tenantRepository.findById(tenantId);
 		if (!tenant) {
-			throw new Error('Tenant not found');
+			throw new AppError('Tenant not found', 404);
 		}
 
-		// Get latest mileage rate for tenant
 		const mileageRate = await this.mileageRateRepository.findLatestByTenantId(tenantId);
 
-		// Return default rate if no rate is set for tenant
 		if (!mileageRate) {
 			return parseFloat(process.env.DEFAULT_MILEAGE_RATE || '0.30');
 		}
@@ -31,15 +30,14 @@ export class MileageRateServiceImpl implements MileageRateService {
 		return mileageRate.rate;
 	}
 
-	async updateMileageRate(tenantId: string, rate: number): Promise<MileageRate> {
-		// Check if tenant exists
+	async updateMileageRate(tenantId: string, rate: number) {
 		const tenant = await this.tenantRepository.findById(tenantId);
 		if (!tenant) {
-			throw new Error('Tenant not found');
+			throw new AppError('Tenant not found', 404);
 		}
 
-		// Create new mileage rate
 		const mileageRate = new MileageRate(uuidv4(), tenantId, rate);
+
 		return this.mileageRateRepository.create(mileageRate);
 	}
 }

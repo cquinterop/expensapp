@@ -10,25 +10,25 @@ import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { ExpenseStatus, ExpenseType } from '@/domain/entities/expense.entity';
 import { ValidationError } from '@/domain/errors/app-error';
+import { User } from '@/domain/entities/user.entity';
 
 @injectable()
 export class ExpenseController {
 	constructor(@inject(TYPES.ExpenseService) private readonly expenseService: ExpenseService) {}
 
-	async createExpense(req: Request, res: Response): Promise<void> {
+	async createExpense(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { expenseType } = req.body;
-			const userId = req.user?.id;
-			const tenantId = req.user?.tenantId;
+			const { tenantId, id: userId } = req.user as User;
 
 			const expenseHandlers = {
 				[ExpenseType.REGULAR]: async () => {
 					const regularExpenseDto = plainToClass(CreateRegularExpenseDto, req.body);
 					const errors = await validate(regularExpenseDto);
-					if (errors.length > 0) {
-						res.status(400).json({ errors });
-						return null;
+					if (errors.length) {
+						throw new ValidationError('Invalid regular expense data', errors);
 					}
+
 					return this.expenseService.createRegularExpense({
 						tenantId,
 						userId,
@@ -41,10 +41,10 @@ export class ExpenseController {
 				[ExpenseType.TRAVEL]: async () => {
 					const travelExpenseDto = plainToClass(CreateTravelExpenseDto, req.body);
 					const errors = await validate(travelExpenseDto);
-					if (errors.length > 0) {
-						res.status(400).json({ errors });
-						return null;
+					if (errors.length) {
+						throw new ValidationError('Invalid travel expense data', errors);
 					}
+
 					return this.expenseService.createTravelExpense({
 						tenantId,
 						userId,
@@ -68,10 +68,10 @@ export class ExpenseController {
 				[ExpenseType.MILEAGE]: async () => {
 					const mileageExpenseDto = plainToClass(CreateMileageExpenseDto, req.body);
 					const errors = await validate(mileageExpenseDto);
-					if (errors.length > 0) {
-						res.status(400).json({ errors });
-						return null;
+					if (errors.length) {
+						throw new ValidationError('Invalid mileage expense data', errors);
 					}
+
 					return this.expenseService.createMileageExpense({
 						tenantId,
 						userId,
@@ -82,34 +82,29 @@ export class ExpenseController {
 				},
 			};
 
-			const expenseHandler = expenseHandlers[expenseType];
+			const expenseHandler = expenseHandlers?.[expenseType as ExpenseType];
 
 			if (!expenseHandler) {
-				res.status(400).json({ error: 'Invalid expense type' });
-				return;
+				throw new ValidationError('Invalid expense type');
 			}
 
 			const expense = await expenseHandler();
 
 			res.status(201).json(expense);
 		} catch (error) {
-			res.status(400).json({ error: (error as Error).message });
+			next(error);
 		}
 	}
 
 	async getExpenses(req: Request, res: Response, next: NextFunction) {
 		try {
-			// Validate query parameters
 			const filterDto = plainToClass(ExpenseFilterDto, req.query);
 			const errors = await validate(filterDto);
 			if (errors.length) {
 				throw new ValidationError('Invalid expense filter data', errors);
 			}
+			const { tenantId } = req.user as User;
 
-			// Set tenant ID from authenticated user
-			const tenantId = req.user?.tenantId;
-
-			// Call service
 			const result = await this.expenseService.getExpenses({
 				tenantId,
 				status: filterDto.status as ExpenseStatus,
@@ -131,108 +126,103 @@ export class ExpenseController {
 		}
 	}
 
-	async getExpenseById(req: Request, res: Response): Promise<void> {
+	async getExpenseById(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { id } = req.params;
+			const { tenantId } = req.user as User;
+
 			const expense = await this.expenseService.getExpenseById(id);
 
-			// Check if expense belongs to user's tenant
-			if (expense.tenantId !== req.user?.tenantId) {
+			if (expense.tenantId !== tenantId) {
 				res.status(403).json({ error: 'You do not have permission to view this expense' });
 				return;
 			}
 
 			res.status(200).json(expense);
 		} catch (error) {
-			res.status(404).json({ error: (error as Error).message });
+			next(error);
 		}
 	}
 
-	async updateExpense(req: Request, res: Response): Promise<void> {
+	async updateExpense(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { id } = req.params;
+			const { tenantId } = req.user as User;
 			const expense = await this.expenseService.getExpenseById(id);
 
-			// Check if expense belongs to user's tenant
-			if (expense.tenantId !== req.user?.tenantId) {
-				res.status(403).json({ error: 'You do not have permission to update this expense' });
-				return;
+			if (expense.tenantId !== tenantId) {
+				throw new ValidationError('You do not have permission to update this expense');
 			}
 
-			// Only allow updates if expense is pending
 			if (expense.status !== ExpenseStatus.PENDING) {
-				res.status(400).json({ error: 'Only pending expenses can be updated' });
-				return;
+				throw new ValidationError('Only pending expenses can be updated');
 			}
 
-			// Update expense
 			const updatedExpense = await this.expenseService.updateExpense(id, req.body);
+
 			res.status(200).json(updatedExpense);
 		} catch (error) {
-			res.status(400).json({ error: (error as Error).message });
+			next(error);
 		}
 	}
 
-	async deleteExpense(req: Request, res: Response): Promise<void> {
+	async deleteExpense(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { id } = req.params;
 			const expense = await this.expenseService.getExpenseById(id);
+			const { tenantId } = req.user as User;
 
-			// Check if expense belongs to user's tenant
-			if (expense.tenantId !== req.user?.tenantId) {
+			if (expense.tenantId !== tenantId) {
 				res.status(403).json({ error: 'You do not have permission to delete this expense' });
 				return;
 			}
 
-			// Only allow deletion if expense is pending
 			if (expense.status !== ExpenseStatus.PENDING) {
 				res.status(400).json({ error: 'Only pending expenses can be deleted' });
 				return;
 			}
 
-			// Delete expense
 			await this.expenseService.deleteExpense(id);
+
 			res.status(204).send();
 		} catch (error) {
-			res.status(400).json({ error: (error as Error).message });
+			next(error);
 		}
 	}
 
-	async approveExpense(req: Request, res: Response): Promise<void> {
+	async approveExpense(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { id } = req.params;
-			const adminId = req.user?.id;
+			const { id: adminId, isAdmin } = req.user as User;
 
-			// Check if user is admin
-			if (!req.user?.isAdmin) {
+			if (!isAdmin) {
 				res.status(403).json({ error: 'Only admins can approve expenses' });
 				return;
 			}
 
-			// Approve expense
 			const expense = await this.expenseService.approveExpense(id, adminId);
+
 			res.status(200).json(expense);
 		} catch (error) {
-			res.status(400).json({ error: (error as Error).message });
+			next(error);
 		}
 	}
 
-	async rejectExpense(req: Request, res: Response): Promise<void> {
+	async rejectExpense(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { id } = req.params;
-			const adminId = req.user?.id;
+			const { id: adminId, isAdmin } = req.user as User;
 
-			// Check if user is admin
-			if (!req.user?.isAdmin) {
+			if (!isAdmin) {
 				res.status(403).json({ error: 'Only admins can reject expenses' });
 				return;
 			}
 
-			// Reject expense
 			const expense = await this.expenseService.rejectExpense(id, adminId);
+
 			res.status(200).json(expense);
 		} catch (error) {
-			res.status(400).json({ error: (error as Error).message });
+			next(error);
 		}
 	}
 }

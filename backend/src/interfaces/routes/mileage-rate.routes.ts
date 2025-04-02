@@ -21,7 +21,11 @@ const mileageRateController = container.get<MileageRateController>(TYPES.Mileage
  *       401:
  *         description: Unauthorized
  */
-router.get('/', authenticate, (req, res) => mileageRateController.getCurrentMileageRate(req, res));
+router.get(
+	'/',
+	authenticate,
+	mileageRateController.getCurrentMileageRate.bind(mileageRateController),
+);
 
 /**
  * @swagger
@@ -53,8 +57,11 @@ router.get('/', authenticate, (req, res) => mileageRateController.getCurrentMile
  *       403:
  *         description: Forbidden - Admin access required
  */
-router.put('/', authenticate, authorizeAdmin, (req, res) =>
-	mileageRateController.updateMileageRate(req, res),
+router.put(
+	'/',
+	authenticate,
+	authorizeAdmin,
+	mileageRateController.updateMileageRate.bind(mileageRateController),
 );
 
 export default router;
