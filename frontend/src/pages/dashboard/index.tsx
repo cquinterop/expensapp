@@ -5,6 +5,7 @@ import { getCurrentUser, getExpenses } from "@/lib/api";
 import { useNavigate } from "react-router";
 import BasePagination from "./base-pagination";
 import ExpenseFilter from "./expense-filter";
+import { Factory } from "lucide-react";
 
 interface User {
 	id: string;
@@ -102,7 +103,7 @@ export default function Dashboard() {
 			<div className="container h-[var(--header-height) - 100vh] mx-auto px-6 py-16">
 				<div className="flex justify-between items-center mb-8">
 					<div>
-						<h1 className="text-3xl font-bold font-fira">Expenses</h1>
+						<h1 className="text-3xl font-bold font-fira flex gap-3 items-center"><Factory /> {user?.tenantName}</h1>
 						<p className="text-muted-foreground">
 							Welcome {user?.fullName} ({user?.role})
 						</p>

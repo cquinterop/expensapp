@@ -21,6 +21,7 @@ import {
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronsUpDown } from "lucide-react";
+import EmptyState from "@/components/ui/empty-state";
 
 interface Expense {
 	id: string;
@@ -80,7 +81,7 @@ export function ExpenseList({ isAdmin, expenses }) {
 	// Use useCallback to prevent unnecessary re-renders
 
 	if (!expenses.length) {
-		return <div className="text-center py-10">No expenses found</div>;
+		return <EmptyState />;
 	}
 
 	return (
@@ -114,7 +115,7 @@ export function ExpenseList({ isAdmin, expenses }) {
 									<TableCell className="capitalize">
 										{expense.expenseType}
 									</TableCell>
-									<TableCell>{expense.user.fullName}</TableCell>
+									<TableCell>{expense.submitter}</TableCell>
 									<TableCell>
 										{format(new Date(expense.submittedAt), "PPp")}
 									</TableCell>

@@ -11,6 +11,10 @@ const BasePagination = ({ pagination, expenses, setFilters }) => {
 		[pagination, setFilters]
 	);
 
+	if (!pagination.totalCount) {
+		return null;
+	}
+
 	return (
 		<div className="flex justify-between items-center mt-4">
 			<div className="text-sm text-muted-foreground">
