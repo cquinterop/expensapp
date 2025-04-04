@@ -173,13 +173,11 @@ export class ExpenseController {
 			const { tenantId } = req.user as User;
 
 			if (expense.tenantId !== tenantId) {
-				res.status(403).json({ error: 'You do not have permission to delete this expense' });
-				return;
+				throw new ValidationError('You do not have permission to delete this expense');
 			}
 
 			if (expense.status !== ExpenseStatus.PENDING) {
-				res.status(400).json({ error: 'Only pending expenses can be deleted' });
-				return;
+				throw new ValidationError('Only pending expenses can be deleted');
 			}
 
 			await this.expenseService.deleteExpense(id);
@@ -196,8 +194,7 @@ export class ExpenseController {
 			const { id: adminId, isAdmin } = req.user as User;
 
 			if (!isAdmin) {
-				res.status(403).json({ error: 'Only admins can approve expenses' });
-				return;
+				throw new ValidationError('You do not have permission approve this expense');
 			}
 
 			const expense = await this.expenseService.approveExpense(id, adminId);
@@ -214,8 +211,7 @@ export class ExpenseController {
 			const { id: adminId, isAdmin } = req.user as User;
 
 			if (!isAdmin) {
-				res.status(403).json({ error: 'Only admins can reject expenses' });
-				return;
+				throw new ValidationError('You do not have permission reject this expense');
 			}
 
 			const expense = await this.expenseService.rejectExpense(id, adminId);

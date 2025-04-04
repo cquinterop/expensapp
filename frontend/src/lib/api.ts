@@ -1,4 +1,5 @@
 import axios from "axios";
+import { cache } from "react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -45,6 +46,12 @@ export const getExpenses = (params: {
 	limit?: number;
 }) => {
 	return api.get("/expenses", { params });
+};
+
+export const getExpenseReport = async () => {
+	const { data } = await api.get("/reports/expenses");
+
+	return data;
 };
 
 export const createExpense = (data: any) => {

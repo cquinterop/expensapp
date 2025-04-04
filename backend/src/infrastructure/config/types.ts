@@ -9,6 +9,7 @@ export const TYPES = {
 	TransportationDetailRepository: Symbol.for('TransportationDetailRepository'),
 	MileageExpenseRepository: Symbol.for('MileageExpenseRepository'),
 	MileageRateRepository: Symbol.for('MileageRateRepository'),
+	ReportRepository: Symbol.for('ReportRepository'),
 
 	// Services
 	AuthService: Symbol.for('AuthService'),
@@ -16,6 +17,7 @@ export const TYPES = {
 	TenantService: Symbol.for('TenantService'),
 	UserService: Symbol.for('UserService'),
 	MileageRateService: Symbol.for('MileageRateService'),
+	ReportService: Symbol.for('ReportService'),
 
 	// Controllers
 	AuthController: Symbol.for('AuthController'),

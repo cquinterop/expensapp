@@ -1,18 +1,22 @@
 import { Routes } from "react-router";
 import { renderRoutes } from "@/utils/router";
-import ThemeProvider from "@/providers/theme-provider";
 import routes from "@/router";
-import Header from "@/components/ui/header";
+import ThemeProvider from "@/providers/theme-provider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import LayoutPage from "@/components/layout";
 import { Toaster } from "sonner";
+
+const queryClient = new QueryClient();
 
 const App = () => {
 	return (
 		<ThemeProvider>
-			<Header />
-			<main className="container mx-auto page-height">
-				<Routes>{renderRoutes(routes)}</Routes>
-			</main>
-			<Toaster richColors position="top-center" />
+			<QueryClientProvider client={queryClient}>
+				<LayoutPage>
+					<Routes>{renderRoutes(routes)}</Routes>
+					<Toaster richColors position="top-center" />
+				</LayoutPage>
+			</QueryClientProvider>
 		</ThemeProvider>
 	);
 };

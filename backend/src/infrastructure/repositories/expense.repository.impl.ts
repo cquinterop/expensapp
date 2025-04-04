@@ -18,36 +18,25 @@ export class ExpenseRepositoryImpl implements ExpenseRepository {
 		return this.mapModelToEntity(expenseModel);
 	}
 
-	async findByFilters(filters: ExpenseFilters): Promise<{ expenses: Expense[]; total: number }> {
-		const where: any = {};
-
-		if (filters.tenantId) {
-			where.tenantId = filters.tenantId;
-		}
-
-		if (filters.userId) {
-			where.userId = filters.userId;
-		}
-
-		if (filters.status) {
-			where.status = filters.status;
-		}
-
-		if (filters.startDate || filters.endDate) {
-			where.submittedAt = {};
-
-			if (filters.startDate) {
-				where.submittedAt[Op.gte] = filters.startDate;
-			}
-
-			if (filters.endDate) {
-				where.submittedAt[Op.lte] = filters.endDate;
-			}
-		}
-
+	async findByFilters(
+		filters: Partial<ExpenseFilters>,
+	): Promise<{ expenses: Expense[]; total: number }> {
 		const page = filters.page || 1;
 		const limit = filters.limit || 10;
 		const offset = (page - 1) * limit;
+		const where = {
+			...(filters.tenantId && { tenantId: filters.tenantId }),
+			...(filters.userId && { userId: filters.userId }),
+			...(filters.status && { status: filters.status }),
+			...(filters.startDate || filters.endDate
+				? {
+						submittedAt: {
+							...(filters.startDate && { [Op.gte]: filters.startDate }),
+							...(filters.endDate && { [Op.lte]: filters.endDate }),
+						},
+					}
+				: {}),
+		};
 
 		const { rows, count } = await ExpenseModel.findAndCountAll({
 			where,
