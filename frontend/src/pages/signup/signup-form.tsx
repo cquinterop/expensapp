@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ROUTES } from "@/constants/routes";
-import { signup } from "@/lib/api";
+import { signup } from "@/services/api/auth.service";
 import AuthForm from "@/components/shared/auth-form";
 import { useCallback } from "react";
 
@@ -54,7 +54,7 @@ const SignUpForm = () => {
 		<AuthForm
 			formSchema={signUpSchema}
 			formFields={signUpFields}
-			redirect={ROUTES.DASHBOARD}
+			redirect={ROUTES.EXPENSES}
 			handleOnSubmit={handleOnSubmit}
 			cta="Sign In"
 		/>

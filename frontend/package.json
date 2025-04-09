@@ -22,7 +22,6 @@
     "@tailwindcss/vite": "^4.0.17",
     "@tanstack/react-query": "^5.71.5",
     "axios": "^1.8.4",
-    "axios-cache-interceptor": "^1.7.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",

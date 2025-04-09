@@ -4,7 +4,7 @@ import type { AuthService } from '@/domain/services/auth.service';
 import { TYPES } from '@/infrastructure/config/types';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
-import { LoginDto } from '@/application/dto/auth/login.dto';
+import { SigninDto } from '@/application/dto/auth/signin.dto';
 import { SignupDto } from '@/application/dto/auth/signup.dto';
 import { NODE_ENV } from '@/infrastructure/config/env';
 import { ValidationError } from '@/domain/errors/app-error';
@@ -14,16 +14,16 @@ import { User } from '@/domain/entities/user.entity';
 export class AuthController {
 	constructor(@inject(TYPES.AuthService) private readonly authService: AuthService) {}
 
-	async login(req: Request, res: Response, next: NextFunction) {
+	async signin(req: Request, res: Response, next: NextFunction) {
 		try {
-			const loginDto = plainToClass(LoginDto, req.body);
-			const errors = await validate(loginDto);
+			const signinDto = plainToClass(SigninDto, req.body);
+			const errors = await validate(signinDto);
 			if (errors.length) {
-				throw new ValidationError('Invalid login credentials', errors);
+				throw new ValidationError('Invalid signin credentials', errors);
 			}
 
 			const { email, password } = req.body;
-			const { token, user } = await this.authService.login(email, password);
+			const { token, user } = await this.authService.signin(email, password);
 
 			res.cookie('token', token, {
 				httpOnly: true,
@@ -65,7 +65,7 @@ export class AuthController {
 		}
 	}
 
-	async logout(req: Request, res: Response) {
+	async signout(_req: Request, res: Response) {
 		res.clearCookie('token');
 		res.status(200).json({ message: 'Logged out successfully' });
 	}

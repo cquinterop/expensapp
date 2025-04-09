@@ -3,7 +3,7 @@ import ExpenseSummaryCharts from "@/pages/dashboard/charts-section/expense-summa
 import ExpenseStatusChart from "@/pages/dashboard/charts-section/expense-status-chart";
 import ExpenseTypeChart from "@/pages/dashboard/charts-section/expense-type-chart";
 import EmptyState from "@/components/ui/empty-state";
-import { getExpenseReport } from "@/lib/api";
+import { getExpenseReport } from "@/services/api/report.service";
 
 interface ReportData {
 	summary: {
@@ -20,17 +20,6 @@ interface ReportData {
 }
 
 const ChartSection = () => {
-	/* 	const [filters, setFilters] = useState({
-		startDate: null as Date | null,
-		endDate: null as Date | null,
-		status: "",
-	});
-
-	const params = {
-		...(filters.startDate && { startDate: filters.startDate.toISOString() }),
-		...(filters.endDate && { endDate: filters.endDate.toISOString() }),
-		...(filters.status && { status: filters.status }),
-	}; */
 	const { data }: { data: ReportData } = useSuspenseQuery({
 		queryKey: ["expenses"],
 		queryFn: getExpenseReport,

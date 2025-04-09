@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ROUTES } from "@/constants/routes";
-import { login } from "@/lib/api";
+import { signin } from  "@/services/api/auth.service";
 import AuthForm from "@/components/shared/auth-form";
 import { useCallback } from "react";
 
@@ -34,7 +34,7 @@ const signInFields = [
 
 const SignInForm = () => {
 	const handleOnSubmit = useCallback(
-		(data: z.input<typeof signInSchema>) => login(data),
+		(data: z.input<typeof signInSchema>) => signin(data),
 		[]
 	);
 
@@ -42,7 +42,7 @@ const SignInForm = () => {
 		<AuthForm
 			formSchema={signInSchema}
 			formFields={signInFields}
-			redirect={ROUTES.DASHBOARD}
+			redirect={ROUTES.EXPENSES}
 			handleOnSubmit={handleOnSubmit}
 			cta="Sign In"
 		/>

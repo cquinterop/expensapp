@@ -19,7 +19,7 @@
     }
   },
   "paths": {
-    "/api/auth/login": {
+    "/api/auth/signin": {
       "post": {
         "description": "",
         "responses": {
@@ -39,7 +39,7 @@
         }
       }
     },
-    "/api/auth/logout": {
+    "/api/auth/signout": {
       "post": {
         "description": "",
         "responses": {

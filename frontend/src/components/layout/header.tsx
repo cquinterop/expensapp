@@ -2,26 +2,28 @@ import ModeToggle from "@/components/ui/mode-toggle";
 import { LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
-import api, { logout } from "@/lib/api";
+import { signout } from "@/services/api/auth.service";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 import { ROUTES } from "@/constants/routes";
 
 const Header = () => {
 	const navigate = useNavigate();
+	const { user, setUser } = useAuth();
 
-	const handleLogout = async () => {
+	const handleSignout = async () => {
 		try {
-			await logout();
+			await signout();
 
-			localStorage.removeItem("user");
 			navigate(ROUTES.SIGNIN);
+			setUser(null);
 		} catch (error) {
 			console.error("Logout error:", error);
 			toast.error("Error", { description: "Failed to logout" });
 		}
 	};
 
-	if (!localStorage.getItem("user")) {
+	if (!user) {
 		return null;
 	}
 
@@ -32,19 +34,17 @@ const Header = () => {
 					expensapp
 				</Link>
 				<Link to="/expenses">Expenses</Link>
-				{localStorage.getItem("user") === "admin" && (
-					<Link to="/dashboard">Dashboard</Link>
-				)}
+				{user?.role === "admin" && <Link to="/dashboard">Dashboard</Link>}
 			</nav>
 			<div className="flex items-center gap-2">
 				<ModeToggle />
 				<Button
 					variant="ghost"
 					className="cursor-pointer"
-					onClick={handleLogout}
+					onClick={() => handleSignout()}
 				>
 					<LogOut />
-					<span className="sr-only">Logout</span>
+					<span className="sr-only">Signout</span>
 				</Button>
 			</div>
 		</header>

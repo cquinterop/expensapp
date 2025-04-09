@@ -13,8 +13,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import { useNavigate } from "react-router";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosResponse, isAxiosError } from "axios";
 import { InputHTMLAttributes } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 type FormField<T extends string> = {
 	label: string;
@@ -51,15 +52,16 @@ const AuthForm = <T extends string>({
 		),
 	});
 	const navigate = useNavigate();
+	const { setUser } = useAuth();
 
 	const onSubmit = async (data: SchemaDataType) => {
 		try {
-			await handleOnSubmit(data);
+			const user = await handleOnSubmit(data);
 
-			localStorage.setItem("user", "true");
+			setUser(user);
 			navigate(redirect);
-		} catch (error: unknown) {
-			if (!(error instanceof AxiosError)) {
+		} catch (error) {
+			if (!isAxiosError(error)) {
 				return;
 			}
 			if (error.response?.data?.message) {

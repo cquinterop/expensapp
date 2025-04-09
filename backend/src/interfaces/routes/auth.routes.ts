@@ -10,9 +10,9 @@ const authController = container.get<AuthController>(TYPES.AuthController);
 
 /**
  * @swagger
- * /auth/login:
+ * /auth/signin:
  *   post:
- *     summary: Login to the system
+ *     summary: Signin to the system
  *     tags: [Authentication]
  *     requestBody:
  *       required: true
@@ -33,11 +33,11 @@ const authController = container.get<AuthController>(TYPES.AuthController);
  *                 format: password
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Signin successful
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', apiLimiter, authController.login.bind(authController));
+router.post('/signin', apiLimiter, authController.signin.bind(authController));
 
 /**
  * @swagger
@@ -77,9 +77,9 @@ router.post('/signup', authController.signup.bind(authController));
 
 /**
  * @swagger
- * /auth/logout:
+ * /auth/signout:
  *   post:
- *     summary: Logout from the system
+ *     summary: Signout from the system
  *     tags: [Authentication]
  *     security:
  *       - bearerAuth: []
@@ -87,7 +87,7 @@ router.post('/signup', authController.signup.bind(authController));
  *       200:
  *         description: Logout successful
  */
-router.post('/logout', authController.logout.bind(authController));
+router.post('/signout', authController.signout.bind(authController));
 
 /**
  * @swagger

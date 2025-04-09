@@ -18,7 +18,7 @@ export class AuthServiceImpl implements AuthService {
 		@inject(TYPES.TenantRepository) private readonly tenantRepository: TenantRepository,
 	) {}
 
-	async login(email: string, password: string) {
+	async signin(email: string, password: string) {
 		const user = await this.userRepository.findByEmail(email);
 		if (!user) {
 			throw new AuthenticationError('Invalid email or password');
