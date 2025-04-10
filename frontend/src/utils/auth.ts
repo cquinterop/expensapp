@@ -1,4 +1,4 @@
-type Role = keyof typeof ROLES;
+export type Role = keyof typeof ROLES;
 type Permission = (typeof ROLES)[Role][number];
 
 const ROLES = {
@@ -14,10 +14,10 @@ const ROLES = {
 	employee: ["view:expenses", "create:expenses"],
 } as const;
 
-export const hasPermission = (user: { role: Role }, permission: Permission) => {
-	if (!user) {
+export const hasPermission = (role: Role, permission: Permission) => {
+	if (!role) {
 		return false;
 	}
 
-	return (ROLES[user.role] as readonly Permission[]).includes(permission);
+	return (ROLES[role] as readonly Permission[]).includes(permission);
 };

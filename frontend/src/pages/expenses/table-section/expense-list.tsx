@@ -25,6 +25,8 @@ import { usePagination } from "@/hooks/usePagination";
 import BasePagination from "@/components/shared/base-pagination";
 import { useFilterExpenses } from "@/hooks/useFilterExpenses";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
+import { hasPermission, Role } from "@/utils/auth";
 
 interface Expense {
 	id: string;
@@ -60,7 +62,6 @@ interface Expense {
 	};
 }
 
-
 const COLUMNS = [
 	"",
 	"Description",
@@ -79,6 +80,7 @@ const STATUS_STYLES = {
 } as const;
 
 export function ExpenseList() {
+	const { user } = useAuth();
 	const { setPage, page } = usePagination();
 	const { filters } = useFilterExpenses();
 
@@ -119,37 +121,48 @@ export function ExpenseList() {
 				<TableBody>
 					{expenses.map((expense: Expense) => (
 						<Collapsible key={expense.id} asChild>
-							<TableRow>
-								<TableCell>
-									<CollapsibleTrigger asChild>
-										<Button
-											className="cursor-pointer"
-											variant="ghost"
-											size="sm"
+							<>
+								<TableRow>
+									<TableCell>
+										<CollapsibleTrigger asChild>
+											<Button
+												className="cursor-pointer"
+												variant="ghost"
+												size="sm"
+											>
+												<ChevronsUpDown className="h-4 w-4" />
+												<span className="sr-only">Toggle</span>
+											</Button>
+										</CollapsibleTrigger>
+									</TableCell>
+									<TableCell>{expense.description}</TableCell>
+									<TableCell className="capitalize">
+										{expense.expenseType}
+									</TableCell>
+									<TableCell>{expense.submitter}</TableCell>
+									<TableCell>
+										{format(new Date(expense.submittedAt), "PPp")}
+									</TableCell>
+									<TableCell>€{expense.amount.toFixed(2)}</TableCell>
+									<TableCell>
+										<Badge
+											variant="outline"
+											className={`capitalize ${
+												STATUS_STYLES[
+													expense.status as keyof typeof STATUS_STYLES
+												]
+											}`}
 										>
-											<ChevronsUpDown className="h-4 w-4" />
-											<span className="sr-only">Toggle</span>
-										</Button>
-									</CollapsibleTrigger>
-								</TableCell>
-								<TableCell>{expense.description}</TableCell>
-								<TableCell className="capitalize">
-									{expense.expenseType}
-								</TableCell>
-								<TableCell>{expense.submitter}</TableCell>
-								<TableCell>
-									{format(new Date(expense.submittedAt), "PPp")}
-								</TableCell>
-								<TableCell>€{expense.amount.toFixed(2)}</TableCell>
-								<TableCell>
-									<Badge
-										variant="outline"
-										className={`capitalize ${STATUS_STYLES[expense.status as keyof typeof STATUS_STYLES]}`}
-									>
-										{expense.status}
-									</Badge>
-								</TableCell>
-								<TableCell>{<ExpenseActions expense={expense} />}</TableCell>
+											{expense.status}
+										</Badge>
+									</TableCell>
+									<TableCell>
+										{hasPermission(user?.role as Role, "approve:expenses") &&
+											hasPermission(user?.role as Role, "reject:expenses") && (
+												<ExpenseActions expense={expense} />
+											)}
+									</TableCell>
+								</TableRow>
 								<CollapsibleContent asChild>
 									<TableRow>
 										<TableCell
@@ -160,7 +173,7 @@ export function ExpenseList() {
 										</TableCell>
 									</TableRow>
 								</CollapsibleContent>
-							</TableRow>
+							</>
 						</Collapsible>
 					))}
 				</TableBody>

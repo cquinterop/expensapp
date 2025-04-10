@@ -2,8 +2,8 @@ import { useQueryState, parseAsIsoDate, parseAsStringEnum } from "nuqs";
 
 export interface FilterTypes {
 	status: string | null;
-	startDate: Date | null,
-	endDate: Date | null,
+	startDate: Date | null;
+	endDate: Date | null;
 }
 
 export const useFilterExpenses = () => {
@@ -15,9 +15,9 @@ export const useFilterExpenses = () => {
 	const [endDate, setEndDate] = useQueryState("endDate", parseAsIsoDate);
 
 	const setFilters = (data: FilterTypes) => {
-			setStatus(data.status);
-			setStartDate(data.startDate);
-			setEndDate(data.endDate);
+		setStatus(data.status !== "all" ? data.status : null);
+		setStartDate(data.startDate);
+		setEndDate(data.endDate);
 	};
 
 	const filters = {

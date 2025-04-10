@@ -1,54 +1,83 @@
-# React + TypeScript + Vite
+# expenseapp frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend for the Expense Management System, built with TypeScript, React, and Vite.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Requirements
+### Locally
 
-## Expanding the ESLint configuration
+- [Node.js](https://nodejs.org/) (version 20+ recommended)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Containers
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- [Docker](https://www.docker.com/)
+
+### Installation
+
+Clone the repository and install dependencies:
+
+```sh
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Environment Variables
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create a `.env` file in the root directory and configure the following:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```ini
+VITE_API_URL=http://localhost:3000
+```
+
+### Running Locally
+
+Start the frontend in development mode:
+
+```sh
+npm run dev
+```
+
+### Running with Docker
+
+#### 1. Run Frontend with Docker
+
+To run the frontend inside a Docker container:
+
+```sh
+docker-compose up frontend
+```
+
+#### 2. Running with Docker Compose
+
+To run both backend and frontend with Docker Compose:
+
+```sh
+docker-compose up
+```
+
+### Linting & Formatting
+
+#### Check Linting Issues
+```sh
+npm run lint:check
+```
+
+#### Auto-fix Linting Issues
+```sh
+npm run lint:fix
+```
+
+### Build the Frontend
+
+To create a production-ready build:
+
+```sh
+npm run build
+```
+
+### Preview the Build
+
+To preview the built frontend:
+
+```sh
+npm run preview
 ```

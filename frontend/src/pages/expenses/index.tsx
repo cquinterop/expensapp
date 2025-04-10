@@ -2,7 +2,7 @@ import { ExpenseList } from "@/pages/expenses/table-section/expense-list";
 import ExpenseFilter from "@/pages/expenses/expense-filter";
 import HeaderSection from "@/pages/expenses/header-section";
 import LayoutPage from "@/components/layout";
-import ErrorBoundary from "@/components/shared/error-boundary";
+import ErrorBoundary from "@/components/shared/error";
 import { Suspense } from "react";
 import Spinner from "@/components/ui/spinner";
 
