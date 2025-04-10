@@ -3,6 +3,8 @@ import ExpenseFilter from "@/pages/expenses/expense-filter";
 import HeaderSection from "@/pages/expenses/header-section";
 import LayoutPage from "@/components/layout";
 import ErrorBoundary from "@/components/shared/error-boundary";
+import { Suspense } from "react";
+import Spinner from "@/components/ui/spinner";
 
 const ExpensesPage = () => {
 	return (
@@ -10,7 +12,9 @@ const ExpensesPage = () => {
 			<HeaderSection />
 			<ExpenseFilter />
 			<ErrorBoundary>
-				<ExpenseList />
+				<Suspense fallback={<Spinner />}>
+					<ExpenseList />
+				</Suspense>
 			</ErrorBoundary>
 		</LayoutPage>
 	);

@@ -1,6 +1,6 @@
 import api from "@/lib/api";
 
-interface ExpensePayload {
+export interface ExpensePayload {
 	tenantId: string;
 	status?: string;
 	startDate?: string;
@@ -9,8 +9,10 @@ interface ExpensePayload {
 	limit?: number;
 }
 
-export const getExpenses = (params: ExpensePayload) => {
-	return api.get("/expenses", { params });
+export const getExpenses = async (params: ExpensePayload) => {
+	const { data: response } = await api.get("/expenses", { params });
+
+	return response;
 };
 
 export const createExpense = async (data: object) => {

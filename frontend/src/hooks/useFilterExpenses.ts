@@ -1,32 +1,33 @@
-import { useQueryState } from 'nuqs';
+import { useQueryState, parseAsIsoDate, parseAsStringEnum } from "nuqs";
 
-const serializeQuery = (filters: Record<string, string>) =>
-	Object.entries(filters)
-		.reduce((acc, [key, value]) => `${key}:${value} ${acc}`, '')
-		.trim();
+export interface FilterTypes {
+	status: string | null;
+	startDate: Date | null,
+	endDate: Date | null,
+}
 
 export const useFilterExpenses = () => {
-	const [title, setTitle] = useQueryState('title');
-	const [body, setBody] = useQueryState('body');
-	const [state, setState] = useQueryState('state');
+	const [status, setStatus] = useQueryState(
+		"status",
+		parseAsStringEnum(["pending", "approved", "rejected"])
+	);
+	const [startDate, setStartDate] = useQueryState("startDate", parseAsIsoDate);
+	const [endDate, setEndDate] = useQueryState("endDate", parseAsIsoDate);
+
+	const setFilters = (data: FilterTypes) => {
+			setStatus(data.status);
+			setStartDate(data.startDate);
+			setEndDate(data.endDate);
+	};
 
 	const filters = {
-		is: 'issue',
-		archived: 'false',
-		repo: 'facebook/react',
-		sort: 'created-desc',
-		...(state && { state: state }),
-		...(title && { 'in:title': ` ${title}` }),
-		...(body && { 'in:body': ` ${body}` }),
+		...(status && { status }),
+		...(startDate && { startDate }),
+		...(endDate && { endDate }),
 	};
 
 	return {
-		query: serializeQuery(filters),
-		title,
-		body,
-		state,
-		setTitle,
-		setBody,
-		setState,
+		filters,
+		setFilters,
 	};
 };

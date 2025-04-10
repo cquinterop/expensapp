@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { getExpenses } from "@/services/api/expenses.service";
+import { ExpensePayload, getExpenses } from "@/services/api/expenses.service";
 import ExpenseActions from "@/pages/expenses/table-section/expense-actions";
 import ExpenseDetail from "@/pages/expenses/table-section/expense-detail";
 import { Button } from "@/components/ui/button";
@@ -21,16 +20,18 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronsUpDown } from "lucide-react";
 import EmptyState from "@/components/ui/empty-state";
-import Spinner from "@/components/ui/spinner";
 import { EXPENSES_PER_PAGE } from "@/constants/expenses";
 import { usePagination } from "@/hooks/usePagination";
 import BasePagination from "@/components/shared/base-pagination";
+import { useFilterExpenses } from "@/hooks/useFilterExpenses";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 interface Expense {
 	id: string;
 	description: string;
 	amount: number;
 	status: string;
+	submitter: string;
 	expenseType: string;
 	submittedAt: string;
 	user: {
@@ -59,9 +60,6 @@ interface Expense {
 	};
 }
 
-interface ExpenseListProps {
-	expenses: Expense[];
-}
 
 const COLUMNS = [
 	"",
@@ -78,49 +76,24 @@ const STATUS_STYLES = {
 	pending: "bg-yellow-100 text-yellow-800 dark:text-black",
 	approved: "bg-green-100 text-green-800 dark:text-black",
 	rejected: "bg-red-100 text-red-800 dark:text-black",
-};
+} as const;
+
 export function ExpenseList() {
-	const { setPage, page, setPageInfo, pageInfo } = usePagination();
+	const { setPage, page } = usePagination();
+	const { filters } = useFilterExpenses();
 
-	const [expenses, setExpenses] = useState([]);
-	const [loading, setLoading] = useState(true);
-	/* 	const [filters, setFilters] = useState({
-		status: "",
-		startDate: null as Date | null,
-		endDate: null as Date | null,
-	}); */
+	const params = {
+		page,
+		limit: EXPENSES_PER_PAGE,
+		...filters,
+	};
 
-	useEffect(() => {
-		const fetchExpenses = async () => {
-			setLoading(true);
-
-			try {
-				const params: any = {
-					page,
-					limit: EXPENSES_PER_PAGE,
-				};
-				/*
-				if (filters.status) params.status = filters.status;
-				if (filters.startDate)
-					params.startDate = filters.startDate.toISOString();
-				if (filters.endDate) params.endDate = filters.endDate.toISOString(); */
-
-				const {
-					data: { expenses, ...pagination },
-				} = await getExpenses(params);
-
-				setExpenses(expenses);
-				setPageInfo({ ...pagination });
-			} catch (error) {
-				console.error("Error fetching expenses:", error);
-				toast.error("Error", { description: "Failed to fetch expenses" });
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchExpenses();
-	}, [page]);
+	const {
+		data: { expenses, ...pagination },
+	} = useSuspenseQuery({
+		queryKey: ["expenses", params],
+		queryFn: () => getExpenses(params as ExpensePayload),
+	});
 
 	const handleChangePage = useCallback(
 		(page: number) => {
@@ -128,10 +101,6 @@ export function ExpenseList() {
 		},
 		[setPage]
 	);
-
-	if (loading) {
-		return <Spinner />;
-	}
 
 	if (!expenses.length) {
 		return <EmptyState />;
@@ -148,7 +117,7 @@ export function ExpenseList() {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{expenses.map((expense) => (
+					{expenses.map((expense: Expense) => (
 						<Collapsible key={expense.id} asChild>
 							<TableRow>
 								<TableCell>
@@ -175,7 +144,7 @@ export function ExpenseList() {
 								<TableCell>
 									<Badge
 										variant="outline"
-										className={`capitalize ${STATUS_STYLES[expense.status]}`}
+										className={`capitalize ${STATUS_STYLES[expense.status as keyof typeof STATUS_STYLES]}`}
 									>
 										{expense.status}
 									</Badge>
@@ -197,9 +166,9 @@ export function ExpenseList() {
 				</TableBody>
 			</Table>
 			<BasePagination
-				totalPages={pageInfo.totalPages}
-				page={pageInfo.page}
-				changePage={handleChangePage}
+				totalPages={pagination.totalPages}
+				page={pagination.page}
+				changePage={(page) => handleChangePage(page)}
 			/>
 		</div>
 	);
