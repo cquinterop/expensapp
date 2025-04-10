@@ -36,6 +36,7 @@ export class AuthController {
 				email: user.email,
 				role: user.role,
 				tenantId: user.tenantId,
+				tenantName: user.tenantName,
 			});
 		} catch (error) {
 			next(error);
