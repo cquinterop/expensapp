@@ -25,10 +25,8 @@ import { usePagination } from "@/hooks/usePagination";
 import BasePagination from "@/components/shared/base-pagination";
 import { useFilterExpenses } from "@/hooks/useFilterExpenses";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
-import { hasPermission, Role } from "@/utils/auth";
 
-interface Expense {
+export interface Expense {
 	id: string;
 	description: string;
 	amount: number;
@@ -80,7 +78,6 @@ const STATUS_STYLES = {
 } as const;
 
 export function ExpenseList() {
-	const { user } = useAuth();
 	const { setPage, page } = usePagination();
 	const { filters } = useFilterExpenses();
 
@@ -157,10 +154,7 @@ export function ExpenseList() {
 										</Badge>
 									</TableCell>
 									<TableCell>
-										{hasPermission(user?.role as Role, "approve:expenses") &&
-											hasPermission(user?.role as Role, "reject:expenses") && (
-												<ExpenseActions expense={expense} />
-											)}
+										<ExpenseActions expense={expense} />
 									</TableCell>
 								</TableRow>
 								<CollapsibleContent asChild>

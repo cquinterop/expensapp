@@ -20,7 +20,10 @@ export class UserRepositoryImpl implements UserRepository {
 	}
 
 	async findByEmail(email: string) {
-		const userModel = await UserModel.findOne({ where: { email } });
+		const userModel = await UserModel.findOne({
+			where: { email },
+			include: [{ model: TenantModel }],
+		});
 		if (!userModel) {
 			return null;
 		}

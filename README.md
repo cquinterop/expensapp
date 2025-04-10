@@ -2,8 +2,6 @@
 
 1. [Introduction](#introduction)
 2. [System Architecture](#system-architecture)
-   - [Architecture Diagram](#architecture-diagram)
-   - [Data Flow](#data-flow)
 3. [Backend Architecture](#backend-architecture)
    - [Domain-Driven Design (DDD)](#domain-driven-design-ddd)
    - [Dependency Injection with InversifyJS](#dependency-injection-with-inversifyjs)
@@ -44,7 +42,7 @@ The backend of expensapp is built using Node.js with Express, following a Domain
 
 ### Domain-Driven Design (DDD)
 
-I implemented a strict DDD approach with the following layers:
+I implemented a DDD approach with the following layers:
 
 1. **Domain Layer**: Contains business entities, repository interfaces, and domain services that define the core business logic.
 
@@ -106,7 +104,7 @@ container.bind<ExpenseController>(TYPES.ExpenseController).to(ExpenseController)
 // ... more bindings
 ```
 
-This approach allows us to:
+This approach allows me to:
 
 - Easily swap implementations (e.g., switch from Sequelize to another ORM)
 - Write more focused unit tests with mocked dependencies
@@ -235,6 +233,8 @@ I chose PostgreSQL for our database due to its:
 - Rich feature set including JSON support and full-text search
 - Excellent performance and scalability
 
+
+![Database](</frontend/public/db.jpg>)
 
 As a next step, I plan to deploy the database to [Neon](https://neon.tech/)
 
