@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ExpensePayload, getExpenses } from "@/services/api/expenses.service";
 import ExpenseActions from "@/pages/expenses/table-section/expense-actions";
-import ExpenseDetail from "@/pages/expenses/table-section/expense-detail";
+/* import ExpenseDetail from "@/pages/expenses/table-section/expense-detail"; */
 import { Button } from "@/components/ui/button";
 import {
 	Table,
@@ -163,7 +163,7 @@ export function ExpenseList() {
 											colSpan={COLUMNS.length}
 											className="bg-gray-50 px-16 py-4"
 										>
-											<ExpenseDetail expense={expense} />
+											{/* <ExpenseDetail expense={expense} /> */}
 										</TableCell>
 									</TableRow>
 								</CollapsibleContent>

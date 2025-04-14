@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import { Sequelize } from 'sequelize';
 import type { ReportRepository, ReportFilters } from '@/domain/repositories/report.repository';
-import { ExpenseModel } from '../database/models/expense.model';
+import { ExpenseModel } from '@/infrastructure/database/models/expense.model';
 
 @injectable()
 export class ReportRepositoryImpl implements ReportRepository {

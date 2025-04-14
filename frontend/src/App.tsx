@@ -6,14 +6,16 @@ import { ROUTES } from "./constants/routes";
 import SignInPage from "./pages/signin";
 import SignUpPage from "./pages/signup";
 import ProtectedRoute from "./router/protected-route";
-import ExpensesPage from "./pages/expenses";
 import PrivateRoute from "./router/private-route";
-import DashboardPage from "./pages/dashboard";
 import NotFoundPage from "./pages/not-found";
 import { queryClient } from "@/lib/query-client";
 import AuthProvider from "@/providers/auth-provider";
 import PublicRoute from "./router/public-route";
 import { NuqsAdapter } from "nuqs/adapters/react-router/v7";
+import { lazy } from "react";
+
+const ExpensesPage = lazy(() => import("./pages/expenses"));
+const DashboardPage = lazy(() => import("./pages/dashboard"));
 
 const App = () => {
 	return (

@@ -13,9 +13,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import { useNavigate } from "react-router";
-import { AxiosResponse, isAxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { InputHTMLAttributes } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { CurrentUserResponse } from "@/services/api/auth.service";
 
 type FormField<T extends string> = {
 	label: string;
@@ -27,8 +28,7 @@ export interface AuthFormProps<T extends string> {
 	formSchema: z.ZodSchema;
 	formFields: readonly FormField<T>[];
 	redirect: string;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	handleOnSubmit: (data: any) => Promise<AxiosResponse>;
+	handleOnSubmit: (data: Record<T, string>) => Promise<CurrentUserResponse>;
 	cta: string;
 }
 

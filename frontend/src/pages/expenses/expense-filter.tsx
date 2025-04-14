@@ -138,7 +138,7 @@ const ExpenseFilter = () => {
 					variant="link"
 					onClick={clearForm}
 				>
-					Clear Form
+					Clear
 				</Button>
 			</form>
 		</Form>

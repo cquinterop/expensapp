@@ -3,31 +3,33 @@ import {
 	CurrentUserResponse,
 	getCurrentUser,
 } from "@/services/api/auth.service";
-import { PropsWithChildren, useEffect, useState, useMemo } from "react";
+import { PropsWithChildren, useState, useMemo, useEffect } from "react";
 import { AuthContext } from "@/providers/context/auth-context";
+import { useQuery } from "@tanstack/react-query";
 
 export default function AuthProvider({
 	children,
 }: Readonly<PropsWithChildren>) {
-	const [isLoading, setIsLoading] = useState(true);
-
 	const [user, setUser] = useState<CurrentUserResponse | null>(null);
 	const value = useMemo(() => ({ user, setUser }), [user]);
+	const {
+		data: currentUser,
+		isLoading,
+		error,
+	} = useQuery({
+		queryKey: ["currentUser"],
+		queryFn: getCurrentUser,
+		gcTime: 0,
+	});
 
 	useEffect(() => {
-		const getUser = async () => {
-			try {
-				const currentUser = await getCurrentUser();
-				setUser(currentUser);
-			} catch {
-				setUser(null);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		getUser();
-	}, []);
+		if (currentUser) {
+			setUser(currentUser);
+		}
+		if (error) {
+			setUser(null);
+		}
+	}, [currentUser, error]);
 
 	return (
 		<AuthContext.Provider value={value}>

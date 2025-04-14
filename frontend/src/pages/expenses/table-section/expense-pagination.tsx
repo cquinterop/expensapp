@@ -1,11 +1,10 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import BasePagination from "@/components/shared/base-pagination";
 import { usePagination } from "@/hooks/usePagination";
 
 const ExpensePagination = () => {
 	const { setPage, pageInfo } = usePagination();
 	const expensesCount = pageInfo.limit * pageInfo.page;
-	debugger;
 
 	const handleChangePage = useCallback(
 		(page: number) => {

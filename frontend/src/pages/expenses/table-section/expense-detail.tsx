@@ -1,5 +1,6 @@
-const ExpenseDetail = ({ expense }) => {
-	const types = {
+const ExpenseDetail = () => {
+	// TODO
+/* 	const types = {
 		regular: {
 			receiptUrl: "Receipt Url",
 		},
@@ -12,13 +13,13 @@ const ExpenseDetail = ({ expense }) => {
 			distanceKm: "Distance (km)",
 			ratePerKm: "Rate per km",
 		},
-	};
+	}; */
 
 	return (
 		<ul>
-			{Object.entries(types[expense.expenseType]).map(([key, value]) => (
+{/* 			{Object.entries(types[expense.expenseType]).map(([key, value]) => (
 				<li key={key} className="my-2">{`${value}: ${expense[key]}`}</li>
-			))}
+			))} */}
 		</ul>
 	);
 };
