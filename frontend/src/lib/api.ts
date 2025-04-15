@@ -20,7 +20,7 @@ api.interceptors.response.use(
 			toast.error(error.response.data.message);
 		}
 
-		return Promise.reject(new Error(error));
+		return Promise.reject(error as Error);
 	}
 );
 
