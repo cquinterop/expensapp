@@ -6,6 +6,7 @@ import { signout } from "@/services/api/auth.service";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { ROUTES } from "@/constants/routes";
+import { hasPermission, Role } from "@/utils/auth";
 
 const Header = () => {
 	const navigate = useNavigate();
@@ -15,7 +16,7 @@ const Header = () => {
 		try {
 			await signout();
 
-			navigate(ROUTES.SIGNIN);
+			navigate(ROUTES.BASE);
 			setUser(null);
 		} catch (error) {
 			console.error("Logout error:", error);
@@ -34,7 +35,7 @@ const Header = () => {
 					expensapp
 				</Link>
 				<Link to="/expenses">Expenses</Link>
-				{user?.role === "admin" && <Link to="/dashboard">Dashboard</Link>}
+				{hasPermission(user.role as Role, "view:dashboard") && <Link to="/dashboard">Dashboard</Link>}
 			</nav>
 			<div className="flex items-center gap-2">
 				<ModeToggle />
