@@ -51,8 +51,6 @@ export class ExpenseController {
 						description: travelExpenseDto.description,
 						amount: travelExpenseDto.amount,
 						travelSubtype: travelExpenseDto.travelSubtype,
-						startDate: new Date(travelExpenseDto.startDate),
-						endDate: new Date(travelExpenseDto.endDate),
 						hotelName: travelExpenseDto.hotelName,
 						checkInDate: travelExpenseDto.checkInDate
 							? new Date(travelExpenseDto.checkInDate)

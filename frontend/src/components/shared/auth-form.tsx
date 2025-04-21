@@ -71,11 +71,11 @@ const AuthForm = <T extends string>({
 				});
 			}
 			if (error.response?.data?.details) {
-				error.response.data.details.forEach(
-					([property, message]: [string, string]) => {
+				Object.entries(error.response.data.details).forEach(
+					([property, message]) => {
 						form.setError(property, {
 							type: "server",
-							message,
+							message: message as string,
 						});
 					}
 				);

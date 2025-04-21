@@ -109,7 +109,7 @@ export class ExpenseRepositoryImpl implements ExpenseRepository {
 			model.expenseType as ExpenseType,
 			model.status as ExpenseStatus,
 			model.submittedAt,
-			model.user.fullName,
+			model.user?.fullName,
 		);
 
 		expense.processedAt = model.processedAt || undefined;

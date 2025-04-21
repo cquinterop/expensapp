@@ -37,18 +37,6 @@ export class TravelExpenseModel extends Model {
 	})
 	declare travelSubtype: string;
 
-	@Column({
-		type: DataType.DATE,
-		allowNull: false,
-	})
-	declare startDate: Date;
-
-	@Column({
-		type: DataType.DATE,
-		allowNull: false,
-	})
-	declare endDate: Date;
-
 	@BelongsTo(() => ExpenseModel)
 	declare expense: ExpenseModel;
 

@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ExpensePayload, getExpenses } from "@/services/api/expenses.service";

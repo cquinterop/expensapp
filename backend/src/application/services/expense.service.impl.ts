@@ -78,8 +78,6 @@ export class ExpenseServiceImpl implements ExpenseService {
 			uuidv4(),
 			createdExpense.id,
 			data.travelSubtype as TravelSubtype,
-			new Date(data.startDate),
-			new Date(data.endDate),
 		);
 
 		const createdTravelExpense = await this.travelExpenseRepository.create(travelExpense);

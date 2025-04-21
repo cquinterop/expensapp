@@ -23,14 +23,6 @@ export class CreateTravelExpenseDto {
 	@IsEnum(TravelSubtype)
 	travelSubtype!: TravelSubtype;
 
-	@IsNotEmpty()
-	@IsDateString()
-	startDate!: string;
-
-	@IsNotEmpty()
-	@IsDateString()
-	endDate!: string;
-
 	@ValidateIf((o) => o.travelSubtype === TravelSubtype.ACCOMMODATION)
 	@IsNotEmpty()
 	@IsString()

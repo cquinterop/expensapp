@@ -15,8 +15,6 @@ export interface CreateTravelExpenseDto {
 	description: string;
 	amount: number;
 	travelSubtype: string;
-	startDate: Date;
-	endDate: Date;
 	hotelName?: string;
 	checkInDate?: Date;
 	checkOutDate?: Date;

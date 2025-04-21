@@ -160,8 +160,6 @@ async function seed() {
 			id: travelExpenseDetailId,
 			expenseId: travelExpenseId,
 			travelSubtype: 'accommodation',
-			startDate: new Date(Date.now() - 86400000 * 3), // 3 days ago
-			endDate: new Date(Date.now() - 86400000), // 1 day ago
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});

@@ -19,8 +19,6 @@ export class TravelExpenseRepositoryImpl implements TravelExpenseRepository {
 			id: travelExpense.id,
 			expenseId: travelExpense.expenseId,
 			travelSubtype: travelExpense.travelSubtype,
-			startDate: travelExpense.startDate,
-			endDate: travelExpense.endDate,
 			createdAt: travelExpense.createdAt,
 			updatedAt: travelExpense.updatedAt,
 		});
@@ -36,8 +34,6 @@ export class TravelExpenseRepositoryImpl implements TravelExpenseRepository {
 
 		await travelExpenseModel.update({
 			travelSubtype: travelExpense.travelSubtype,
-			startDate: travelExpense.startDate,
-			endDate: travelExpense.endDate,
 			updatedAt: new Date(),
 		});
 
@@ -59,8 +55,6 @@ export class TravelExpenseRepositoryImpl implements TravelExpenseRepository {
 			model.id,
 			model.expenseId,
 			model.travelSubtype as TravelSubtype,
-			model.startDate,
-			model.endDate,
 		);
 		travelExpense.createdAt = model.createdAt;
 		travelExpense.updatedAt = model.updatedAt;

@@ -1,1 +1,1 @@
-export const EXPENSES_PER_PAGE = 5;
+export const EXPENSES_PER_PAGE = 10;
